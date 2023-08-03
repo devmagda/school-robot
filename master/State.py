@@ -20,7 +20,8 @@ class State:
         self.qrcodes = [Position]
         self.lastQRCodeLocation = Position([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-        self.banana_cascade = cv2.CascadeClassifier('haarcascade_russian_plate_number.xml')
+        self.banana_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+        # self.banana_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
         self.qcd = cv2.QRCodeDetector()
         self.keypoints = Any
 
