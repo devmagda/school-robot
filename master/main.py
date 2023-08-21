@@ -15,6 +15,8 @@ global state
 global image
 
 
+blue = [255, 0, 0]
+
 def initCaptureDevice() -> cv2.VideoCapture:
     # To capture video from webcam.
     global cap
@@ -37,6 +39,7 @@ def viewLoop():
     global active
     print("viewLoop")
     cv2.imshow('Web Capture', image)
+    # cv2.imshow('Mask', mask)
 
 
 def controllerLoop():

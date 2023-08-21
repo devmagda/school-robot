@@ -28,7 +28,7 @@ class State:
     def update(self, img) -> Any:
         self.faces = ImageDetectionUtil.getObjectByCascade(self.face_cascade, img)
         self.eyes = ImageDetectionUtil.getObjectByCascade(self.eye_cascade, img)
-        self.keypoints = ImageDetectionUtil.getKeyPoints(img)
+        self.keypoints = ImageDetectionUtil.getKeyPointsByColor(img, [0, 255, 0])
 
         found, pos, enhanced = ImageDetectionUtil.getQRLocation(self.qcd, img)
         if found:
