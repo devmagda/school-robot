@@ -20,14 +20,14 @@ class State:
         self.qrcodes = [Position]
         self.lastQRCodeLocation = Position([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-        self.banana_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+        self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
         # self.banana_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
         self.qcd = cv2.QRCodeDetector()
         self.keypoints = Any
 
     def update(self, img) -> Any:
         self.faces = ImageDetectionUtil.getObjectByCascade(self.face_cascade, img)
-        self.bananas = ImageDetectionUtil.getObjectByCascade(self.banana_cascade, img)
+        self.eyes = ImageDetectionUtil.getObjectByCascade(self.eye_cascade, img)
         self.keypoints = ImageDetectionUtil.getKeyPoints(img)
 
         found, pos, enhanced = ImageDetectionUtil.getQRLocation(self.qcd, img)
@@ -40,7 +40,7 @@ class State:
         for face in self.faces:
             face.draw(img, True, (255, 255, 255))
 
-        for code in self.bananas:
+        for code in self.eyes:
             code.draw(img, True, (255, 255, 0))
 
         img = cv2.drawKeypoints(img, self.keypoints, img)

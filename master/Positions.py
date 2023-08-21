@@ -13,6 +13,11 @@ class Position:
         text = "Position: " + str(self.position) + " -> " + str(self.center)
         return text
 
+    def contains(self, other):
+        x1, y1, x2, y2 = self.position
+        a, b = self.center
+        return (a >= x1 & a <= x2) & (b >= y1 & b <= y2)
+
     @staticmethod
     def center(face):
         points = np.array(face)
