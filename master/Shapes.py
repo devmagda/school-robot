@@ -33,7 +33,9 @@ class Rectangle:
         return Rectangle(a, b, c, d)
 
     def contains(self, other):
-        x1, y1, x2, y2 = self.position
+        x, y, _, _ = self.position
+        x1, y1 = x
+        x2, y2 = y
         a, b = self.center
         return (a >= x1 & a <= x2) & (b >= y1 & b <= y2)
 

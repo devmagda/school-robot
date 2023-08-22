@@ -3,6 +3,7 @@ from typing import Any
 import cv2
 import numpy as np
 
+from Human import Face
 from ImageUtils import ImageDetectionUtil
 from PointClouds import PointCloud
 from Shapes import Rectangle
@@ -20,32 +21,23 @@ class State:
         self.faces = None
         self.qrcodes = None
         self.cloud = PointCloud
-        self.trash = None
+        self.trashList = None
         self.trash_before = None
         self.lastQRCodeLocation = Rectangle([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
-        # self.banana_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
         self.qcd = cv2.QRCodeDetector()
-        self.keypoints = Any
 
     def update(self, img) -> Any:
-        self.faces = ImageDetectionUtil.getObjectByCascade(self.face_cascade, img)
-        self.eyes = ImageDetectionUtil.getObjectByCascade(self.eye_cascade, img)
-        self.trash_before = self.trash
-        self.cloud = PointCloud.fromImage(img, color=[0, 255, 255])
-        self.keypoints = ImageDetectionUtil.getKeyPointsByColor(img, [0, 255, 255])
-        self.trash = self.cloud.getAsPositions()
-
-        # distance = self.trash_before.getDistance(self.trash)
+        self.faces = Face.getValidFaces(img, self.eye_cascade, self.face_cascade)
+        self.trash_before = self.trashList
+        self.cloud = PointCloud.fromImage(img, color=[0, 255, 255], count=2)
+        self.trashList = self.cloud.getAsPositions()
 
         found, pos, enhanced = ImageDetectionUtil.getQRLocation(self.qcd, img)
         if found:
             self.lastQRCodeLocation = pos
             # self.qrcodes = pos
-
-        if self.keypoints is not None:
-            d = PointCloud(self.keypoints)
 
         return enhanced
 
@@ -53,12 +45,9 @@ class State:
         for face in self.faces:
             face.draw(img, True, (0, 255, 0))
 
-        for eye in self.eyes:
-            eye.draw(img, True, (255, 0, 0))
+        for trash in self.trashList:
+            trash.draw(img, True, (255, 255, 0))
 
-        for code in self.trash:
-            code.draw(img, True, (255, 255, 0))
-
-        img = cv2.drawKeypoints(img, self.keypoints, img)
+        img = cv2.drawKeypoints(img, self.cloud.keypoints, img)
 
         self.lastQRCodeLocation.draw(img, True, (127, 127, 127), 3)
