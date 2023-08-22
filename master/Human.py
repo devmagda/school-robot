@@ -1,4 +1,4 @@
-from ImageDetectionUtil import ImageDetectionUtil
+from ImageUtils import ImageDetectionUtil
 from Positions import Position
 
 

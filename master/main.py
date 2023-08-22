@@ -2,11 +2,7 @@
 from typing import Any
 
 import cv2
-import threading
-import time
-import numpy as np
 
-from ImageDetectionUtil import ImageDetectionUtil
 from State import State
 
 global active

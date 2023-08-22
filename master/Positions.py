@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+import ImageUtils
+
 
 class Position:
 
@@ -13,6 +15,14 @@ class Position:
         text = "Position: " + str(self.position) + " -> " + str(self.center)
         return text
 
+    @staticmethod
+    def fromTwoCorners(x1, y1, x2, y2):
+        b = (x1, y1)
+        a = (x2, y1)
+        c = (x2, y2)
+        d = (x1, y2)
+        return Position(a, b, c, d)
+
     def contains(self, other):
         x1, y1, x2, y2 = self.position
         a, b = self.center
@@ -24,8 +34,19 @@ class Position:
         x, y = np.mean(points, axis=0)
         return [int(x), int(y)]
 
+    @staticmethod
+    def getPositionByColor(img, color):
+        mask = ImageUtils.ImageDetectionUtil.getMaskByColor(img, color)
+        bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
+        if bbox is not None:
+            x1, y1, x2, y2 = bbox
+            pos = Position.fromTwoCorners(x1, y1, x2, y2)
+            return pos
+        return Position((-100, -100), (-100, -100), (-100, -100), (-100, -100))
+
     def draw(self, img, drawOutline=False, color=(0, 255, 0), thickness=1):
         a, b, c, d = self.position
+
         if self.selected:
             x, y = self.center
             color = (0, 0, 255) # Red

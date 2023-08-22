@@ -1,12 +1,17 @@
 from typing import Any
 
+from PIL import Image
+
 import cv2
 import numpy as np
 
 from Positions import Position
 
 # Limit Values
-RANGE = 20
+RANGE = 10
+LOWER = 100
+UPPER = 255
+
 
 # Colors
 BLUE = [255, 0, 0]
@@ -16,15 +21,15 @@ YELLOW = [0, 255, 255]
 PINK = [255, 0, 255]
 TURQUOISE = [255, 255, 0]
 
+
 class Colors:
 
     @staticmethod
     def getColorLimits(color):
         c = np.uint8([[color]])
-        hsvC = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
-        p = PINK
-        lowerlimit = hsvC[0][0][0] - RANGE, 100, 100
-        upperlimit = hsvC[0][0][0] + RANGE, 255, 255
+        hsv = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
+        lowerlimit = hsv[0][0][0] - RANGE, LOWER, LOWER
+        upperlimit = hsv[0][0][0] + RANGE, UPPER, UPPER
 
         lowerlimit = np.array(lowerlimit, dtype=np.uint8)
         upperlimit = np.array(upperlimit, dtype=np.uint8)
@@ -41,6 +46,12 @@ class ImageDetectionUtil:
         sift = cv2.SIFT_create()
         kp = sift.detect(mask, None)
         return kp
+
+    @staticmethod
+    def getBoxPointsByMask(mask):
+        _mask = Image.fromarray(mask)
+        bbox = _mask.getbbox()  # Creates bounding box
+        return bbox
 
     @staticmethod
     def getObjectByCascade(cascade, img) -> [Position]:
