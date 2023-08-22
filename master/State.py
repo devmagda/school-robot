@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from ImageUtils import ImageDetectionUtil
-from Positions import Position
+from Shapes import Rectangle
 
 
 def getFaceDistance(a, b) -> float:
@@ -16,10 +16,10 @@ class State:
 
     def __init__(self):
         # List of current faces
-        self.faces = [Position]
-        self.qrcodes = [Position]
-        self.objects = Position
-        self.lastQRCodeLocation = Position([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
+        self.faces = [Rectangle]
+        self.qrcodes = [Rectangle]
+        self.objects = Rectangle
+        self.lastQRCodeLocation = Rectangle([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
         # self.banana_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
@@ -30,7 +30,7 @@ class State:
         self.faces = ImageDetectionUtil.getObjectByCascade(self.face_cascade, img)
         self.eyes = ImageDetectionUtil.getObjectByCascade(self.eye_cascade, img)
         self.keypoints = ImageDetectionUtil.getKeyPointsByColor(img, [255, 0, 0])
-        self.objects = Position.getPositionByColor(img, [0, 255, 255])
+        self.objects = Rectangle.getRectByColor(img, [0, 255, 255])
         found, pos, enhanced = ImageDetectionUtil.getQRLocation(self.qcd, img)
         if found:
             self.lastQRCodeLocation = pos

@@ -4,15 +4,15 @@ import numpy as np
 import ImageUtils
 
 
-class Position:
+class Rectangle:
 
     def __init__(self, a, b, c, d):
         self.position = [a, b, c, d]
-        self.center = Position.center((a, b, c, d))
+        self.center = Rectangle.center((a, b, c, d))
         self.selected = False
 
     def __str__(self):
-        text = "Position: " + str(self.position) + " -> " + str(self.center)
+        text = "Rectangle: " + str(self.position) + " -> " + str(self.center)
         return text
 
     @staticmethod
@@ -21,7 +21,7 @@ class Position:
         a = (x2, y1)
         c = (x2, y2)
         d = (x1, y2)
-        return Position(a, b, c, d)
+        return Rectangle(a, b, c, d)
 
     def contains(self, other):
         x1, y1, x2, y2 = self.position
@@ -35,14 +35,14 @@ class Position:
         return [int(x), int(y)]
 
     @staticmethod
-    def getPositionByColor(img, color):
+    def getRectByColor(img, color):
         mask = ImageUtils.ImageDetectionUtil.getMaskByColor(img, color)
         bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
         if bbox is not None:
             x1, y1, x2, y2 = bbox
-            pos = Position.fromTwoCorners(x1, y1, x2, y2)
+            pos = Rectangle.fromTwoCorners(x1, y1, x2, y2)
             return pos
-        return Position((-100, -100), (-100, -100), (-100, -100), (-100, -100))
+        return Rectangle((-100, -100), (-100, -100), (-100, -100), (-100, -100))
 
     def draw(self, img, drawOutline=False, color=(0, 255, 0), thickness=1):
         a, b, c, d = self.position
@@ -50,15 +50,15 @@ class Position:
         if self.selected:
             x, y = self.center
             color = (0, 0, 255) # Red
-            Position.drawCircle(img, x, y, color)
+            Rectangle.drawCircle(img, x, y, color)
 
         if drawOutline:
-            Position.drawLine(img, a, b, color, thickness)
-            Position.drawLine(img, a, c, color, thickness)
-            Position.drawLine(img, b, d, color, thickness)
-            Position.drawLine(img, c, d, color, thickness)
+            Rectangle.drawLine(img, a, b, color, thickness)
+            Rectangle.drawLine(img, a, c, color, thickness)
+            Rectangle.drawLine(img, b, d, color, thickness)
+            Rectangle.drawLine(img, c, d, color, thickness)
 
-        Position.drawLine(img, self.center, self.center, color, 6)
+        Rectangle.drawLine(img, self.center, self.center, color, 6)
 
     @staticmethod
     def drawLine(img, a, b, color, t):
