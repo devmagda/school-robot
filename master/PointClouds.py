@@ -18,18 +18,19 @@ class PointCloud:
 
         return nparray
 
-    def __init__(self, keypoints):
+    def __init__(self, keypoints, count):
         self.points = PointCloud.fromKeypoints(keypoints)
         self.centers = []
         self.labels = []
         self.compactness = 0
+        self.keypoints = keypoints
         if len(self.points) > 10:
-            self.group(5)
+            self.group(count)
 
 
     def group(self, n):
         # Define criteria = ( type, max_iter = 10 , epsilon = 1.0 )
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 20, 1.0)
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 50, 2.0)
         # Set flags (Just to avoid line break in the code)
         flags = cv2.KMEANS_RANDOM_CENTERS
         # if len(self.points) >
@@ -45,15 +46,15 @@ class PointCloud:
         return rects
 
     @staticmethod
-    def fromImage(img, color=None):
-        keypoints = None
+    def fromImage(img, color=None, count=5):
+        selfkeypoints = None
         if color is None:
             keypoints = ImageUtils.ImageDetectionUtil.getKeyPoints(img)
         else:
             keypoints = ImageUtils.ImageDetectionUtil.getKeyPointsByColor(img, color)
 
         if keypoints is not None:
-            return PointCloud(keypoints)
+            return PointCloud(keypoints, count)
 
         return None
 
