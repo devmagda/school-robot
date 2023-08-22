@@ -16,6 +16,15 @@ class Rectangle:
         return text
 
     @staticmethod
+    def fromCenter(center, margin=50, color=[0, 255, 0]):
+        x, y = center
+        a = (x + margin, y + margin)
+        b = (x - margin, y + margin)
+        c = (x + margin, y - margin)
+        d = (x - margin, y - margin)
+        return Rectangle(a, b, c, d)
+
+    @staticmethod
     def fromTwoCorners(x1, y1, x2, y2):
         b = (x1, y1)
         a = (x2, y1)
@@ -73,9 +82,16 @@ class Rectangle:
     def toNumpyArray(self) -> np.array:
         return np.array(self.center)
 
+    def getAngle(self, other) -> float:
+        a = self.toNumpyArray()
+        b = other.toNumpyArray()
+        c = a - b
+        return np.angle(c, deg=True)
+
     def getDistance(self, other) -> float:
         a = self.toNumpyArray()
         b = other.toNumpyArray()
         return np.linalg.norm(a - b)
 
     # def getCenter(self, other) -> np.array:
+

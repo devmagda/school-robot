@@ -5,7 +5,8 @@ from PIL import Image
 import cv2
 import numpy as np
 
-from Shapes import Rectangle
+import Shapes
+from PointClouds import PointCloud
 
 # Limit Values
 RANGE = 10
@@ -42,10 +43,21 @@ class ImageDetectionUtil:
     @staticmethod
     def getKeyPointsByColor(img, color) -> Any:
         mask = ImageDetectionUtil.getMaskByColor(img, color)
-        # gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+        return ImageDetectionUtil.getKeyPointsByMask(mask)
+
+    @staticmethod
+    def getKeyPoints(img):
+        mask = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        return ImageDetectionUtil.getKeyPointsByMask(mask)
+
+    @staticmethod
+    def getKeyPointsByMask(mask):
         sift = cv2.SIFT_create()
-        kp = sift.detect(mask, None)
-        return kp
+        return sift.detect(mask, None)
+    @staticmethod
+    def getOneRectByColor(img, color) -> Shapes.Rectangle:
+
+        cloud = PointCloud.fromImage(img)
 
     @staticmethod
     def getBoxPointsByMask(mask):
@@ -54,12 +66,12 @@ class ImageDetectionUtil:
         return bbox
 
     @staticmethod
-    def getObjectByCascade(cascade, img) -> [Rectangle]:
+    def getObjectByCascade(cascade, img) -> [Shapes.Rectangle]:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = cascade.detectMultiScale(gray, 1.1, 4)
         ret = []
         for (x, y, w, h) in faces:
-            ret.append(Rectangle([x, y], [x + w, y], [x, y + h], [x + w, y + h]))
+            ret.append(Shapes.Rectangle([x, y], [x + w, y], [x, y + h], [x + w, y + h]))
         return ret
 
     @staticmethod
@@ -70,7 +82,7 @@ class ImageDetectionUtil:
         return mask
 
     @staticmethod
-    def getQRLocation(qcd, img) -> tuple[bool, Rectangle, Any]:
+    def getQRLocation(qcd, img) -> tuple[bool, Shapes.Rectangle, Any]:
 
         # Enhancing the image for better QR code locating
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -81,6 +93,6 @@ class ImageDetectionUtil:
 
         if retval:
             a, b, c, d = points[0]
-            return True, Rectangle(b.astype(int), a.astype(int), c.astype(int), d.astype(int)), gray
+            return True, Shapes.Rectangle(b.astype(int), a.astype(int), c.astype(int), d.astype(int)), gray
 
         return False, None, gray
