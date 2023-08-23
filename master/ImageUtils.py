@@ -14,16 +14,16 @@ LOWER = 100
 UPPER = 255
 
 
-# Colors
-BLUE = [255, 0, 0]
-RED = [0, 0, 255]
-GREEN = [0, 255, 0]
-YELLOW = [0, 255, 255]
-PINK = [255, 0, 255]
-TURQUOISE = [255, 255, 0]
-
-
 class Colors:
+
+    @staticmethod
+    def createColorMap():
+        blue = [255, 0, 0]
+        pink = [255, 0, 255]
+        red = [0, 0, 255]
+        yellow = [0, 255, 255]
+        green = [0, 255, 0]
+        turquoise = [255, 255, 0]
 
     @staticmethod
     def getColorLimits(color):

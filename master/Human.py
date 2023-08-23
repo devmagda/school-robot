@@ -7,18 +7,15 @@ class Human:
         self.eyes = [Rectangle]
         self.face = Rectangle
 
+
 class Face(Rectangle):
     def __init__(self, x1, y1, x2, y2):
-        super().init(x1, y1, x2, y2)
-
-    def __init__(self, position):
-        x1, y1, x2, y2 = position
         super().__init__(x1, y1, x2, y2)
 
     @staticmethod
-    def getValidFaces(image, eyecascade, facecascade):
-        faces = Face.getFromImg(image, facecascade)
-        eyes = Eye.getFromImg(image, eyecascade)
+    def getValidFaces(image, eyeCascade, faceCascade):
+        faces = Face.getFromImg(image, faceCascade)
+        eyes = Eye.getFromImg(image, eyeCascade)
         faces = list(filter(lambda f: Eye.getEyesInsidePosition(f, eyes) >= 2, faces))
         return faces, eyes
 
@@ -28,8 +25,6 @@ class Face(Rectangle):
 
 
 class Eye(Rectangle):
-    def __init__(self, x1, y1, x2, y2):
-        super().__init__(x1, y1, x2, y2)
 
     def __init__(self, position):
         x1, y1, x2, y2 = position
@@ -38,7 +33,6 @@ class Eye(Rectangle):
     @staticmethod
     def getFromImg(image, cascade):
         return ImageDetectionUtil.getObjectByCascade(cascade, image)
-
 
     # Needs Refactoring
     # here, we always check the same image again..
