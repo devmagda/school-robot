@@ -7,7 +7,10 @@ import cv2
 SCREEN_WIDTH = 960
 SCREEN_HEIGHT = 540
 
-# Color values in BGR color space
+# Color values
+# First parameter is color range for detecting hsv color space
+# Second parameter is bgr color space
+# Third parameter is rgb color space
 COLOR_BLUE = (10, [0, 0, 255], [255, 0, 0])
 COLOR_PINK = (10, [255, 0, 255], [255, 0, 255])
 COLOR_RED = (10, [255, 0, 0], [0, 0, 255])
