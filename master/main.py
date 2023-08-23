@@ -1,8 +1,10 @@
 # This is a sample Python script.
+import time
 from typing import Any
 
 import cv2
 
+import Constants
 from State import State
 
 global active
@@ -17,8 +19,11 @@ def initCaptureDevice() -> cv2.VideoCapture:
     # To capture video from webcam.
     global cap
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_HEIGHT)
+
+    _, image = cap.read()
+    cv2.imshow('Web Capture', image)
     return cap
 
 
@@ -26,14 +31,14 @@ def captureLoop():
     global image, cap, state
     _, image = cap.read()
     state.update(image)
-    state.draw(image)
+    state.visualize(image)
 
 
 def viewLoop():
     global image
     global active
     cv2.imshow('Web Capture', image)
-    # cv2.imshow('Mask', mask)
+    # print("--------------------------------")
 
 
 def controllerLoop():
@@ -54,6 +59,7 @@ if __name__ == '__main__':
         captureLoop()
         controllerLoop()
         viewLoop()
+        # time.sleep(5)
 
     # Release the VideoCapture object
     cap.release()

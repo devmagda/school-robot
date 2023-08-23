@@ -3,6 +3,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
+import Constants
 import ImageUtils
 import Shapes
 
@@ -10,7 +11,7 @@ import Shapes
 class PointCloud:
 
     @staticmethod
-    def fromKeypoints(keypoints):
+    def fromKeypoints(keypoints, count=5):
         nparray = np.empty((len(keypoints), 2), np.float32) # creates empty 2d numpy array
 
         for i in range(len(keypoints)):
@@ -18,12 +19,12 @@ class PointCloud:
             y = np.float32(keypoints[i].pt[1])
             nparray[i] = (x, y)
 
-        return nparray
+        return PointCloud(nparray, count, keypoints=keypoints)
 
-    def __init__(self, keypoints, count):
-        self.points = PointCloud.fromKeypoints(keypoints)
-        self.centers = []
-        self.labels = []
+    def __init__(self, points, count=5, keypoints=None):
+        self.points = points
+        self.centers = None
+        self.labels = None
         self.compactness = 0
         self.keypoints = keypoints
         if len(self.points) > 10:
@@ -32,19 +33,19 @@ class PointCloud:
 
 
     def group(self, n):
-        graph = self.getElbowGraphData()
+        # graph = self.getElbowGraphData()
         self.compactness, self.labels, self.centers = PointCloud.kmeans(self.points, n)
 
 
     def getElbowGraphData(self):
         comps = []
         counts = []
-        for n in range(1, int(len(self.points) / 2.0)):
+        for n in range(1, int(len(self.points) / 4.0)):
             compac, _, _ = PointCloud.kmeans(self.points, n)
             comps.append(compac)
             counts.append(n)
-        print("Compactnesses: " + str(comps))
-        print("Counts       : " + str(comps))
+        # print("Compactnesses: " + str(comps))
+        # print("Counts       : " + str(comps))
         plt.plot(counts, comps)
         plt.axis([0, 6, 0, 10000000])
         plt.show()
@@ -52,36 +53,31 @@ class PointCloud:
 
 
     @staticmethod
-    def kmeans(points, n):
-        # Define criteria = ( type, max_iter = 10 , epsilon = 1.0 )
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 50, 2.0)
-        # Set flags (Just to avoid line break in the code)
-        flags = cv2.KMEANS_RANDOM_CENTERS
-        # if len(self.points) >
-        # Apply KMeans
-        return cv2.kmeans(points, n, None, criteria, 5, flags)
+    def kmeans(points, n=5):
+        return cv2.kmeans(points, n, None, Constants.KM_CRITERIA, Constants.KM_TRIES, Constants.KM_FLAGS)
 
 
     def getAsPositions(self):
         rects = []
+        if self.centers is None:
+            return rects
         if not len(self.centers) == 0:
             for c in self.centers:
                 x, y = int(c[0]), int(c[1])
                 rects.append(Shapes.Rectangle.fromCenter((x, y)))
         return rects
 
+
+
     @staticmethod
     def fromImage(img, color=None, count=5):
         selfkeypoints = None
-        if color is None:
-            keypoints = ImageUtils.ImageDetectionUtil.getKeyPoints(img)
-        else:
-            keypoints = ImageUtils.ImageDetectionUtil.getKeyPointsByColor(img, color)
-
+        keypoints = ImageUtils.ImageDetectionUtil.getKeyPoints(img, color)
         if keypoints is not None:
-            return PointCloud(keypoints, count)
-
+            return PointCloud.fromKeypoints(keypoints, Constants.KM_GROUP_COUNT)
         return None
+
+
 
 
 

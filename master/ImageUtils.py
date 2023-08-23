@@ -5,14 +5,8 @@ from PIL import Image
 import cv2
 import numpy as np
 
+import Constants
 import Shapes
-from PointClouds import PointCloud
-
-# Limit Values
-RANGE = 10
-LOWER = 100
-UPPER = 255
-
 
 class Colors:
 
@@ -29,8 +23,8 @@ class Colors:
     def getColorLimits(color):
         c = np.uint8([[color]])
         hsv = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
-        lowerlimit = hsv[0][0][0] - RANGE, LOWER, LOWER
-        upperlimit = hsv[0][0][0] + RANGE, UPPER, UPPER
+        lowerlimit = hsv[0][0][0] - Constants.HSV_RANGE, Constants.HSV_LIMIT_LOWER, Constants.HSV_LIMIT_LOWER
+        upperlimit = hsv[0][0][0] + Constants.HSV_RANGE, Constants.HSV_LIMIT_UPPER, Constants.HSV_LIMIT_UPPER
 
         lowerlimit = np.array(lowerlimit, dtype=np.uint8)
         upperlimit = np.array(upperlimit, dtype=np.uint8)
@@ -46,18 +40,18 @@ class ImageDetectionUtil:
         return ImageDetectionUtil.getKeyPointsByMask(mask)
 
     @staticmethod
-    def getKeyPoints(img):
-        mask = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        return ImageDetectionUtil.getKeyPointsByMask(mask)
+    def getKeyPoints(img, color=None):
+        if color is None:
+            mask = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            return ImageDetectionUtil.getKeyPointsByMask(mask)
+        else:
+            return ImageDetectionUtil.getKeyPointsByColor(img, color)
 
     @staticmethod
     def getKeyPointsByMask(mask):
         sift = cv2.SIFT_create()
-        return sift.detect(mask, None)
-    @staticmethod
-    def getOneRectByColor(img, color) -> Shapes.Rectangle:
-
-        cloud = PointCloud.fromImage(img)
+        mask = sift.detect(mask, None)
+        return mask
 
     @staticmethod
     def getBoxPointsByMask(mask):

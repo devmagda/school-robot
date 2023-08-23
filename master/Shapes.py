@@ -33,10 +33,12 @@ class Rectangle:
         return Rectangle(a, b, c, d)
 
     def contains(self, other):
-        x, y, _, _ = self.position
-        x1, y1 = x
-        x2, y2 = y
-        a, b = self.center
+        x, _, _, y = self.position
+        x1, x2 = x
+        y1, y2 = y
+        a, b = other.center
+
+        # print("[" + str(a) + "] >= " + str(x1) + " & [" + str(a) + "] <= " + str(y1) + " & [" + str(b) + "] >= " + str(x2) + " & [" + str(b) + "] <= " + str(y2))
         return (a >= x1 & a <= x2) & (b >= y1 & b <= y2)
 
     @staticmethod
@@ -57,11 +59,8 @@ class Rectangle:
 
     def draw(self, img, drawOutline=False, color=(0, 255, 0), thickness=1):
         a, b, c, d = self.position
-
-        if self.selected:
-            x, y = self.center
-            color = (0, 0, 255) # Red
-            Rectangle.drawCircle(img, x, y, color)
+        x, y = self.center
+        text = str(x) + ', ' + str(y)
 
         if drawOutline:
             Rectangle.drawLine(img, a, b, color, thickness)
@@ -70,16 +69,13 @@ class Rectangle:
             Rectangle.drawLine(img, c, d, color, thickness)
 
         Rectangle.drawLine(img, self.center, self.center, color, 6)
+        Rectangle.drawText(img, x, y, color=color, text=text)
 
     @staticmethod
     def drawLine(img, a, b, color, t):
         ax, ay = a
         bx, by = b
         cv2.line(img, [ax, ay], [bx, by], color, t)
-
-    @staticmethod
-    def drawCircle(img, a, b, color):
-        cv2.circle(img, (a, b), 10, color, 5)
 
     def toNumpyArray(self) -> np.array:
         return np.array(self.center)
@@ -94,6 +90,14 @@ class Rectangle:
         a = self.toNumpyArray()
         b = other.toNumpyArray()
         return np.linalg.norm(a - b)
+
+    @staticmethod
+    def drawText(img, x, y, color=(0, 0, 0), text='No Text Specified'):
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        org = (x, y)
+        fontScale = .5
+        thickness = 1
+        cv2.putText(img, text, org, font, fontScale, color, thickness, cv2.LINE_AA)
 
     # def getCenter(self, other) -> np.array:
 
