@@ -19,12 +19,13 @@ class Face(Rectangle):
     def getValidFaces(image, eyecascade, facecascade):
         faces = Face.getFromImg(image, facecascade)
         eyes = Eye.getFromImg(image, eyecascade)
-        faces = list(filter(lambda f: Eye.getEyesInsidePosition(f, eyes), faces))
-        return faces
+        faces = list(filter(lambda f: Eye.getEyesInsidePosition(f, eyes) >= 2, faces))
+        return faces, eyes
 
     @staticmethod
     def getFromImg(image, cascade):
         return ImageDetectionUtil.getObjectByCascade(cascade, image)
+
 
 class Eye(Rectangle):
     def __init__(self, x1, y1, x2, y2):
@@ -47,5 +48,5 @@ class Eye(Rectangle):
         for eye in eyes:
             if position.contains(eye):
                 ret.append(position)
-                print(str("Adding: " + str(position)))
+                # print(str("Adding: " + str(position)))
         return len(ret)

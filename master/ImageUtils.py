@@ -89,7 +89,7 @@ class ImageDetectionUtil:
         # _, enhanced = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
         # Retrieving the QR code data
         retval, _, points, _ = qcd.detectAndDecodeMulti(gray)
-        print(points)
+        # print(points)
 
         if retval:
             a, b, c, d = points[0]

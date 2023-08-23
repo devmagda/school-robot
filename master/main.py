@@ -24,7 +24,6 @@ def initCaptureDevice() -> cv2.VideoCapture:
 
 def captureLoop():
     global image, cap, state
-    print("captureLoop")
     _, image = cap.read()
     state.update(image)
     state.draw(image)
@@ -33,14 +32,12 @@ def captureLoop():
 def viewLoop():
     global image
     global active
-    print("viewLoop")
     cv2.imshow('Web Capture', image)
     # cv2.imshow('Mask', mask)
 
 
 def controllerLoop():
     global active
-    print("controllerLoop")
     k = cv2.waitKey(1) & 0xff
     if k == 27:
         active = False

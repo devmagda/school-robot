@@ -19,6 +19,7 @@ class State:
     def __init__(self):
         # List of current faces
         self.faces = None
+        self.eyes = None
         self.qrcodes = None
         self.cloud = PointCloud
         self.trashList = None
@@ -29,7 +30,7 @@ class State:
         self.qcd = cv2.QRCodeDetector()
 
     def update(self, img) -> Any:
-        self.faces = Face.getValidFaces(img, self.eye_cascade, self.face_cascade)
+        self.faces, self.eyes = Face.getValidFaces(img, self.eye_cascade, self.face_cascade)
         self.trash_before = self.trashList
         self.cloud = PointCloud.fromImage(img, color=[0, 255, 255], count=2)
         self.trashList = self.cloud.getAsPositions()
@@ -45,8 +46,11 @@ class State:
         for face in self.faces:
             face.draw(img, True, (0, 255, 0))
 
+        for eye in self.eyes:
+            eye.draw(img, True, (255, 0, 0))
+
         for trash in self.trashList:
-            trash.draw(img, True, (255, 255, 0))
+            trash.draw(img, True, (0, 0, 255))
 
         img = cv2.drawKeypoints(img, self.cloud.keypoints, img)
 

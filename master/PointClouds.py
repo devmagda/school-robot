@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+import matplotlib.pyplot as plt
+
 import ImageUtils
 import Shapes
 
@@ -26,16 +28,39 @@ class PointCloud:
         self.keypoints = keypoints
         if len(self.points) > 10:
             self.group(count)
+        # print("Done")
 
 
     def group(self, n):
+        graph = self.getElbowGraphData()
+        self.compactness, self.labels, self.centers = PointCloud.kmeans(self.points, n)
+
+
+    def getElbowGraphData(self):
+        comps = []
+        counts = []
+        for n in range(1, int(len(self.points) / 2.0)):
+            compac, _, _ = PointCloud.kmeans(self.points, n)
+            comps.append(compac)
+            counts.append(n)
+        print("Compactnesses: " + str(comps))
+        print("Counts       : " + str(comps))
+        plt.plot(counts, comps)
+        plt.axis([0, 6, 0, 10000000])
+        plt.show()
+        return list
+
+
+    @staticmethod
+    def kmeans(points, n):
         # Define criteria = ( type, max_iter = 10 , epsilon = 1.0 )
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 50, 2.0)
         # Set flags (Just to avoid line break in the code)
         flags = cv2.KMEANS_RANDOM_CENTERS
         # if len(self.points) >
         # Apply KMeans
-        self.compactness, self.labels, self.centers = cv2.kmeans(self.points, n, None, criteria, 5, flags)
+        return cv2.kmeans(points, n, None, criteria, 5, flags)
+
 
     def getAsPositions(self):
         rects = []
