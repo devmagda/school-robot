@@ -27,7 +27,7 @@ class PointCloud:
         self.labels = None
         self.compactness = 0
         self.keypoints = keypoints
-        if len(self.points) > 10:
+        if len(self.points) > Constants.KM_GROUP_COUNT * 2:
             self.group(count)
         # print("Done")
 

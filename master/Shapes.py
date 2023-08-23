@@ -58,7 +58,7 @@ class Rectangle:
             return pos
         return Rectangle((-100, -100), (-100, -100), (-100, -100), (-100, -100))
 
-    def draw(self, img, drawOutline=False, color=(0, 255, 0), thickness=1):
+    def draw(self, img, drawOutline=False, color=Constants.COLOR_WHITE, thickness=1):
         a, b, c, d = self.position
         x, y = self.center
         text = str(x) + ', ' + str(y)

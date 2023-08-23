@@ -8,9 +8,9 @@ SCREEN_WIDTH = 960
 SCREEN_HEIGHT = 540
 
 # Color values in BGR color space
-COLOR_BLUE = (10, [255, 0, 0], [0, 0, 255])
+COLOR_BLUE = (10, [0, 0, 255], [255, 0, 0])
 COLOR_PINK = (10, [255, 0, 255], [255, 0, 255])
-COLOR_RED = (10, [0, 0, 255], [255, 0, 0])
+COLOR_RED = (10, [255, 0, 0], [0, 0, 255])
 COLOR_YELLOW = (10, [0, 255, 255], [255, 255, 0])
 COLOR_GREEN = (20, [0, 255, 0], [0, 255, 0])
 COLOR_TURQUOISE = (10, [255, 255, 0], [0, 255, 255])
@@ -29,7 +29,7 @@ HSV_RANGE = 10
 KM_GROUP_COUNT = 2
 KM_CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 5, 2.0)  # ( type, max_iter = 10 , epsilon = 1.0 )
 KM_FLAGS = cv2.KMEANS_RANDOM_CENTERS
-KM_TRIES = 100
+KM_TRIES = 1000
 
 # Shapes Text values
 TEXT_FONT = cv2.FONT_HERSHEY_SIMPLEX
