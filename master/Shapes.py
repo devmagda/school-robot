@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+import Constants
 import ImageUtils
 
 
@@ -73,9 +74,10 @@ class Rectangle:
 
     @staticmethod
     def drawLine(img, a, b, color, t):
+        _, _, rgb = color
         ax, ay = a
         bx, by = b
-        cv2.line(img, [ax, ay], [bx, by], color, t)
+        cv2.line(img, [ax, ay], [bx, by], rgb, t)
 
     def toNumpyArray(self) -> np.array:
         return np.array(self.center)
@@ -92,12 +94,10 @@ class Rectangle:
         return np.linalg.norm(a - b)
 
     @staticmethod
-    def drawText(img, x, y, color=(0, 0, 0), text='No Text Specified'):
-        font = cv2.FONT_HERSHEY_SIMPLEX
+    def drawText(img, x, y, color=Constants.COLOR_WHITE, text='No Text Specified'):
+        _, _, rgb = color
         org = (x, y)
-        fontScale = .5
-        thickness = 1
-        cv2.putText(img, text, org, font, fontScale, color, thickness, cv2.LINE_AA)
+        cv2.putText(img, text, org, Constants.TEXT_FONT, Constants.TEXT_FONT_SCALE, rgb, Constants.TEXT_FONT_THICK, cv2.LINE_AA)
 
     # def getCenter(self, other) -> np.array:
 

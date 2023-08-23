@@ -43,7 +43,4 @@ class Eye(Rectangle):
             if position.contains(eye):
                 ret.append(position)
                 # print(str("Adding: " + str(position)))
-        l = len(ret)
-
-        # print("length: " + str(l))
-        return l
+        return len(ret)

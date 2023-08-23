@@ -45,13 +45,13 @@ class State:
 
     def visualize(self, img):
         for face in self.faces:
-            face.draw(img, True, (0, 255, 0))
+            face.draw(img, True, Constants.COLOR_GREEN)
 
-        for eye in self.eyes:
-            eye.draw(img, True, (255, 0, 0))
+        # for eye in self.eyes:
+        #     eye.draw(img, True, Constants.COLOR_RED)
 
         for trash in self.trashList:
-            trash.draw(img, True, (0, 0, 255))
+            trash.draw(img, True, Constants.COLOR_BLUE)
 
 
         if self.cloud.keypoints == None:

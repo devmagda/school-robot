@@ -8,23 +8,16 @@ import numpy as np
 import Constants
 import Shapes
 
+
 class Colors:
 
     @staticmethod
-    def createColorMap():
-        blue = [255, 0, 0]
-        pink = [255, 0, 255]
-        red = [0, 0, 255]
-        yellow = [0, 255, 255]
-        green = [0, 255, 0]
-        turquoise = [255, 255, 0]
-
-    @staticmethod
     def getColorLimits(color):
-        c = np.uint8([[color]])
+        range, bgr, _ = color
+        c = np.uint8([[bgr]])
         hsv = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
-        lowerlimit = hsv[0][0][0] - Constants.HSV_RANGE, Constants.HSV_LIMIT_LOWER, Constants.HSV_LIMIT_LOWER
-        upperlimit = hsv[0][0][0] + Constants.HSV_RANGE, Constants.HSV_LIMIT_UPPER, Constants.HSV_LIMIT_UPPER
+        lowerlimit = hsv[0][0][0] - range, Constants.HSV_LIMIT_LOWER, Constants.HSV_LIMIT_LOWER
+        upperlimit = hsv[0][0][0] + range, Constants.HSV_LIMIT_UPPER, Constants.HSV_LIMIT_UPPER
 
         lowerlimit = np.array(lowerlimit, dtype=np.uint8)
         upperlimit = np.array(upperlimit, dtype=np.uint8)
