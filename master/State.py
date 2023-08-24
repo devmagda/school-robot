@@ -19,27 +19,38 @@ def getFaceDistance(a, b) -> float:
 class State:
 
     def __init__(self):
-        # List of current faces
+
+        # OpenCV objects
         self.sift = cv2.SIFT_create()
-        self.cpGreen = ImageUtils.ColorPicker(Constants.COLOR_GREEN, Constants.KM_GROUP_COUNT)
-        self.faces = None
-        self.eyes = None
-        # self.qrcodes = None
-        self.cloud = PointCloud
-        self.trashList = None
-        self.trash_before = None
-        # self.lastQRCodeLocation = Rectangle([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+
+        # Color Selectors
+        self.cpGreen = ImageUtils.ColorPicker(Constants.COLOR_GREEN, Constants.KM_GROUP_COUNT)
+
+        # Objects to Track
+        self.faces = None
+        self.eyes = None
+        self.trashes = None
+        # self.qrcodes = None
+
+        # Point cloud to find objects
+        self.cloud = None
+
+
+
+        # self.lastQRCodeLocation = Rectangle([-1000, -1000], [-1000, -1000], [-1000, -1000], [-1000, -1000])
         # self.qcd = cv2.QRCodeDetector()
 
     def update(self, img) -> Any:
+        # Images to generate per frame to save in conversion time (e.g. Only run Once)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Updating values
         self.faces, self.eyes = Face.getValidFaces(gray, self.eye_cascade, self.face_cascade)
-        self.trash_before = self.trashList
         self.cloud = self.cpGreen.calculate(hsv, self.sift)
-        self.trashList = self.cloud.getAsPositions()
+        self.trashes = self.cloud.getAsPositions()
 
     def visualize(self, img):
         for face in self.faces:
@@ -48,7 +59,7 @@ class State:
         for eye in self.eyes:
            eye.draw(img, True, color=Constants.COLOR_PINK)
 
-        for trash in self.trashList:
+        for trash in self.trashes:
             trash.draw(img, True, color=Constants.COLOR_RED)
 
 
