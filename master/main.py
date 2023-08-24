@@ -35,7 +35,8 @@ def captureLoop():
     state.visualize(image)
     diff = (time.time_ns() - last) / 1000000000
     last = time.time_ns()
-    print(diff)
+    fps = int(1 / diff)
+    print(str(fps) + " Frames per second")
 
 
 def viewLoop():
