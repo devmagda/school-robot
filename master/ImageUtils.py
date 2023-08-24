@@ -6,10 +6,22 @@ import cv2
 import numpy as np
 
 import Constants
+import PointClouds
 import Shapes
 
 
+class ColorPicker:
+
+    def __init__(self, color, count):
+        self.color = color
+        self.lower, self.upper = Colors.getColorLimits(color)
+        self.count = count
+
+    def calculate(self, hsv, sift):
+        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count)
+
 class Colors:
+
 
     @staticmethod
     def getColorLimits(color):
@@ -28,23 +40,21 @@ class Colors:
 class ImageDetectionUtil:
 
     @staticmethod
-    def getKeyPointsByColor(img, color) -> Any:
+    def getKeyPointsByColor(img, color, sift) -> Any:
         mask = ImageDetectionUtil.getMaskByColor(img, color)
-        return ImageDetectionUtil.getKeyPointsByMask(mask)
+        return ImageDetectionUtil.getKeyPointsByMask(mask, sift)
 
     @staticmethod
-    def getKeyPoints(img, color=None):
+    def getKeyPoints(img, sift, color=None):
         if color is None:
-            mask = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            return ImageDetectionUtil.getKeyPointsByMask(mask)
+            return ImageDetectionUtil.getKeyPointsByMask(img, sift)
         else:
             return ImageDetectionUtil.getKeyPointsByColor(img, color)
 
     @staticmethod
-    def getKeyPointsByMask(mask):
-        sift = cv2.SIFT_create()
-        mask = sift.detect(mask, None)
-        return mask
+    def getKeyPointsByMask(mask, sift):
+        kp = sift.detect(mask, None)
+        return kp
 
     @staticmethod
     def getBoxPointsByMask(mask):
@@ -53,8 +63,7 @@ class ImageDetectionUtil:
         return bbox
 
     @staticmethod
-    def getObjectByCascade(cascade, img) -> [Shapes.Rectangle]:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    def getObjectByCascade(cascade, gray) -> [Shapes.Rectangle]:
         faces = cascade.detectMultiScale(gray, 1.1, 4)
         ret = []
         for (x, y, w, h) in faces:
@@ -67,6 +76,11 @@ class ImageDetectionUtil:
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, lower_limit, upper_limit)
         return mask
+
+    @staticmethod
+    def getMaskByLimits(hsv, lower_limit, upper_limit):
+        return cv2.inRange(hsv, lower_limit, upper_limit)
+
 
     @staticmethod
     def getQRLocation(qcd, img) -> tuple[bool, Shapes.Rectangle, Any]:

@@ -11,6 +11,7 @@ global active
 global cap
 global state
 global image
+global last
 
 
 blue = [255, 0, 0]
@@ -28,10 +29,13 @@ def initCaptureDevice() -> cv2.VideoCapture:
 
 
 def captureLoop():
-    global image, cap, state
+    global image, cap, state, last
     _, image = cap.read()
     state.update(image)
     state.visualize(image)
+    diff = (time.time_ns() - last) / 1000000000
+    last = time.time_ns()
+    print(diff)
 
 
 def viewLoop():
@@ -50,6 +54,7 @@ def controllerLoop():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    last = 0
     cap = initCaptureDevice()
     state = State()
     _, image = cap.read()

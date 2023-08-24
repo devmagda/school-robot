@@ -1,3 +1,4 @@
+import Constants
 from ImageUtils import ImageDetectionUtil
 from Shapes import Rectangle
 
@@ -13,15 +14,15 @@ class Face(Rectangle):
         super().__init__(x1, y1, x2, y2)
 
     @staticmethod
-    def getValidFaces(image, eyeCascade, faceCascade):
-        faces = Face.getFromImg(image, faceCascade)
-        eyes = Eye.getFromImg(image, eyeCascade)
-        faces = list(filter(lambda f: Eye.getEyesInsidePosition(f, eyes) >= 2, faces))
+    def getValidFaces(gray, eyeCascade, faceCascade):
+        faces = Face.getFromImg(gray, faceCascade)
+        eyes = Eye.getFromImg(gray, eyeCascade)
+        faces = list(filter(lambda f: (Eye.getEyesInsidePosition(f, eyes) >= 2) or Constants.FILTER_FACES , faces))
         return faces, eyes
 
     @staticmethod
-    def getFromImg(image, cascade):
-        return ImageDetectionUtil.getObjectByCascade(cascade, image)
+    def getFromImg(gray, cascade):
+        return ImageDetectionUtil.getObjectByCascade(cascade, gray)
 
 
 class Eye(Rectangle):

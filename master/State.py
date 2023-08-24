@@ -20,6 +20,8 @@ class State:
 
     def __init__(self):
         # List of current faces
+        self.sift = cv2.SIFT_create()
+        self.cpGreen = ImageUtils.ColorPicker(Constants.COLOR_GREEN, Constants.KM_GROUP_COUNT)
         self.faces = None
         self.eyes = None
         # self.qrcodes = None
@@ -32,33 +34,29 @@ class State:
         # self.qcd = cv2.QRCodeDetector()
 
     def update(self, img) -> Any:
-        self.faces, self.eyes = Face.getValidFaces(img, self.eye_cascade, self.face_cascade)
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        self.faces, self.eyes = Face.getValidFaces(gray, self.eye_cascade, self.face_cascade)
         self.trash_before = self.trashList
-        self.cloud = PointCloud.fromImage(img, color=Constants.FILTER_COLOR, count=10)
-        # self.cloud = PointCloud.fromImage(img, color=[0, 255, 255], count=2)
+        self.cloud = self.cpGreen.calculate(hsv, self.sift)
         self.trashList = self.cloud.getAsPositions()
-
-        # found, pos, enhanced = ImageDetectionUtil.getQRLocation(self.qcd, img)
-        # if found:
-        #    self.lastQRCodeLocation = pos
-        #    self.qrcodes = pos
 
     def visualize(self, img):
         for face in self.faces:
             face.draw(img, True, color=Constants.COLOR_GREEN)
 
         for eye in self.eyes:
-            eye.draw(img, True, color=Constants.COLOR_PINK)
+           eye.draw(img, True, color=Constants.COLOR_PINK)
 
         for trash in self.trashList:
             trash.draw(img, True, color=Constants.COLOR_RED)
 
 
-        if self.cloud.keypoints == None:
-            for point in self.cloud.points:
-                x, y = point
-                Rectangle.drawCircle(img, int(x), int(y))
-        else:
-            img = cv2.drawKeypoints(img, self.cloud.keypoints, img)
+        # if self.cloud.keypoints == None:
+        #     for point in self.cloud.points:
+        #         x, y = point
+        #         Rectangle.drawCircle(img, int(x), int(y))
+        # else:
+        #     img = cv2.drawKeypoints(img, self.cloud.keypoints, img)
 
         # self.lastQRCodeLocation.draw(img, True, (127, 127, 127), 3)

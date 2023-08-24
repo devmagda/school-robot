@@ -11,6 +11,13 @@ import Shapes
 class PointCloud:
 
     @staticmethod
+    def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5):
+        mask = ImageUtils.ImageDetectionUtil.getMaskByLimits(hsv, lowerLimit, upperLimit)
+        kp = ImageUtils.ImageDetectionUtil.getKeyPointsByMask(mask, sift)
+        return PointCloud.fromKeypoints(kp, count)
+
+
+    @staticmethod
     def fromKeypoints(keypoints, count=5):
         nparray = np.empty((len(keypoints), 2), np.float32) # creates empty 2d numpy array
 
@@ -70,9 +77,9 @@ class PointCloud:
 
 
     @staticmethod
-    def fromImage(img, color=None, count=5):
+    def fromImage(img, sift, color=None, count=5):
         selfkeypoints = None
-        keypoints = ImageUtils.ImageDetectionUtil.getKeyPoints(img, color)
+        keypoints = ImageUtils.ImageDetectionUtil.getKeyPoints(img, sift,  color)
         if keypoints is not None:
             return PointCloud.fromKeypoints(keypoints, Constants.KM_GROUP_COUNT)
         return None
