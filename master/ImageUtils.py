@@ -63,10 +63,14 @@ class ImageDetectionUtil:
         return bbox
 
     @staticmethod
-    def getObjectByCascade(cascade, gray) -> [Shapes.Rectangle]:
+    def getObjectByCascade(cascade, gray, offset=[0, 0]) -> [Shapes.Rectangle]:
+        xOffset = offset[0]
+        yOffset = offset[1]
         faces = cascade.detectMultiScale(gray, 1.1, 4)
         ret = []
         for (x, y, w, h) in faces:
+            x = xOffset + x
+            y = yOffset + y
             ret.append(Shapes.Rectangle([x, y], [x + w, y], [x, y + h], [x + w, y + h]))
         return ret
 
