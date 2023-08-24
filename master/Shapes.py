@@ -7,7 +7,18 @@ import ImageUtils
 
 class Rectangle:
 
-    def __init__(self, a, b, c, d):
+    def __init__(self, a, b, c, d, margin=0):
+        x = [margin, margin]
+        # self.position = [a + x, b + x, c + x, d + x]
+        a1, a2 = a
+        b1, b2 = b
+        c1, c2 = c
+        d1, d2 = d
+        a = [a1 - margin, a2 - margin]  # upper left
+        b = [b1 + margin, b2 - margin]  # upper right
+        c = [c1 - margin, c2 + margin]  # lower left
+        d = [d1 + margin, d2 + margin]  # lower right
+
         self.position = [a, b, c, d]
         self.center = Rectangle.center((a, b, c, d))
         self.selected = False
@@ -17,7 +28,7 @@ class Rectangle:
         return text
 
     @staticmethod
-    def fromCenter(center, margin=50, color=[0, 255, 0]):
+    def fromCenter(center, margin=50):
         x, y = center
         a = (x + margin, y + margin)
         b = (x - margin, y + margin)
