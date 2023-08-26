@@ -3,16 +3,7 @@ import ImageUtils
 from ImageUtils import ImageDetectionUtil
 from Shapes import Rectangle
 
-
-class Human:
-    def __init__(self, ):
-        self.eyes = [Rectangle]
-        self.face = Rectangle
-
-
-class Face(Rectangle):
-    def __init__(self, x1, y1, x2, y2):
-        super().__init__(x1, y1, x2, y2)
+class Faces():
 
     @staticmethod
     def getValidFaces(gray, eyeCascade, faceCascade, scale=1.0):
@@ -22,7 +13,7 @@ class Face(Rectangle):
         # Scale image
         gray = ImageUtils.ImageDetectionUtil.scaleImage(gray, scale)
 
-        faces = Face.getFromImg(gray, faceCascade)
+        faces = Faces.getFromImg(gray, faceCascade)
 
         c = 0
 
@@ -34,7 +25,7 @@ class Face(Rectangle):
 
         for face in faces:
             roi, offset = ImageUtils.ImageDetectionUtil.getSubImage(gray, face.position)
-            eyes = Eye.getFromImg(roi, eyeCascade, offset=offset)
+            eyes = Eyes.getFromImg(roi, eyeCascade, offset=offset)
             x = len(eyes)
             if x >= 2 or not Constants.FILTER_FACES:
                 found = True
@@ -50,11 +41,7 @@ class Face(Rectangle):
         return ImageDetectionUtil.getObjectByCascade(cascade, gray, color=Constants.FACES_COLOR)
 
 
-class Eye(Rectangle):
-
-    def __init__(self, position):
-        x1, y1, x2, y2 = position
-        super().__init__(x1, y1, x2, y2)
+class Eyes():
 
     @staticmethod
     def getFromImg(image, cascade, offset=[0, 0]):

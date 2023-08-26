@@ -11,7 +11,7 @@ import Shapes
 class PointCloud:
 
     @staticmethod
-    def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5, scale=1.0):
+    def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5, scale=1.0, color=Constants.COLOR_PINK):
         # print("hsv______________")
         # print(hsv)
         hsv = ImageUtils.ImageDetectionUtil.scaleImage(hsv, scale=scale)
@@ -35,12 +35,12 @@ class PointCloud:
             ImageUtils.ImageDetectionUtil.helperShow(mask, 'Limits')
 
             kp = ImageUtils.ImageDetectionUtil.getKeyPointsByMask(mask, sift)
-            return PointCloud.fromKeypoints(kp, count, offset=offset, scale=1/scale)
+            return PointCloud.fromKeypoints(kp, count, offset=offset, scale=1/scale, color=color)
         return None
 
 
     @staticmethod
-    def fromKeypoints(keypoints, count=5, offset=[0, 0], scale=1.0):
+    def fromKeypoints(keypoints, count=5, offset=[0, 0], scale=1.0, color=Constants.COLOR_PINK):
         nparray = np.empty((len(keypoints), 2), np.float32) # creates empty 2d numpy array
 
         xOffset = offset[0]
@@ -51,14 +51,15 @@ class PointCloud:
             y = np.float32(int(keypoints[i].pt[1] * scale) + yOffset)
             nparray[i] = (x, y)
 
-        return PointCloud(nparray, count, keypoints=keypoints)
+        return PointCloud(nparray, count, keypoints=keypoints, color=color)
 
-    def __init__(self, points, count=5, keypoints=None):
+    def __init__(self, points, count=5, keypoints=None, color=Constants.COLOR_PINK):
         self.points = points
         self.centers = None
         self.labels = None
         self.compactness = 0
         self.keypoints = keypoints
+        self.color = color
         if len(self.points) > Constants.KM_GROUP_COUNT * 2:
             self.group(count)
         # print("Done")
@@ -96,7 +97,7 @@ class PointCloud:
         if not len(self.centers) == 0:
             for c in self.centers:
                 x, y = int(c[0]), int(c[1])
-                rects.append(Shapes.Rectangle.fromCenter((x, y)))
+                rects.append(Shapes.Rectangle.fromCenter((x, y), color=self.color))
         return rects
 
 

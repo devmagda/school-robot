@@ -18,7 +18,7 @@ class ColorPicker:
         self.count = count
 
     def calculate(self, hsv, sift, scale=1.0):
-        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale)
+        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale, color=self.color)
 
 class Colors:
 

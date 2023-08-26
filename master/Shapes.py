@@ -51,16 +51,16 @@ class Rectangle:
         return text
 
     @staticmethod
-    def fromCenter(center, margin=50):
+    def fromCenter(center, margin=50, color=Constants.COLOR_BLACK):
         x, y = center
         a = (x + margin, y + margin)
         b = (x - margin, y + margin)
         c = (x + margin, y - margin)
         d = (x - margin, y - margin)
-        return Rectangle(a, b, c, d)
+        return Rectangle(a, b, c, d, color=color)
 
     @staticmethod
-    def fromTwoCorners(x1, y1, x2, y2, margin=10):
+    def fromTwoCorners(x1, y1, x2, y2, margin=10, color=Constants.COLOR_BLACK):
         if x1 < 0:
             x1 = 0 + margin
         if y1 < 0:
@@ -73,7 +73,7 @@ class Rectangle:
         b = (x2, y1)
         c = (x1, y2)
         d = (x2, y2)
-        return Rectangle(a, b, c, d, margin=10)
+        return Rectangle(a, b, c, d, margin=10, color=color)
 
     def contains(self, other):
         x, _, _, y = self.position

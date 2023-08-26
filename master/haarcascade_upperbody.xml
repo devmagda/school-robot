@@ -61,7 +61,7 @@ this paper (available at www.vision.ethz.ch/publications/):
 
 @InProceedings{Kruppa03-bmvc,
   author =       "Hannes Kruppa, Modesto Castrillon-Santana and Bernt Schiele",
-  title =        "Fast and Robust Face Finding via Local Context."
+  title =        "Fast and Robust Faces Finding via Local Context."
   booktitle =    "Joint IEEE International Workshop on Visual Surveillance and Performance Evaluation of Tracking and Surveillance"
   year =         "2003",
   month =        "October"
