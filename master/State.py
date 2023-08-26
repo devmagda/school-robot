@@ -49,8 +49,10 @@ class State:
 
         # Updating values
         self.faces, self.eyes = Face.getValidFaces(gray, self.eye_cascade, self.face_cascade)
+        print("HSV: " + str(hsv))
         self.cloud = self.cpGreen.calculate(hsv, self.sift)
-        self.trashes = self.cloud.getAsPositions()
+        if self.cloud is not None:
+            self.trashes = self.cloud.getAsPositions()
 
     def visualize(self, img):
         for face in self.faces:

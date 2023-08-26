@@ -5,6 +5,7 @@ from typing import Any
 import cv2
 
 import Constants
+import ImageUtils
 from State import State
 
 global active
@@ -42,6 +43,7 @@ def captureLoop():
 def viewLoop():
     global image
     global active
+    image = ImageUtils.ImageDetectionUtil.scaleImage(image, 125)
     cv2.imshow('Web Capture', image)
     # print("--------------------------------")
 

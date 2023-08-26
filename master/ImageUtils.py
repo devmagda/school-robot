@@ -22,7 +22,6 @@ class ColorPicker:
 
 class Colors:
 
-
     @staticmethod
     def getColorLimits(color):
         range, bgr, _ = color
@@ -38,6 +37,23 @@ class Colors:
 
 
 class ImageDetectionUtil:
+
+    @staticmethod
+    def scaleImage(img, scale=100):
+        width = int(img.shape[1] * scale / 100)
+        height = int(img.shape[0] * scale / 100)
+        dim = (width, height)
+
+        # resize image
+        resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+        return resized
+
+    @staticmethod
+    def helperShow(img, title='Default'):
+        try:
+            cv2.imshow(title, img)
+        except:
+            print("Cant show image")
 
     @staticmethod
     def getKeyPointsByColor(img, color, sift) -> Any:
@@ -75,6 +91,22 @@ class ImageDetectionUtil:
         return ret
 
     @staticmethod
+    def getSubImage(img, position):
+        a, b, c, d = position
+        x1 = a[0]
+        y1 = a[1]
+        x2 = d[0]
+        y2 = d[1]
+        roi = None
+        if len(img.shape) == 2:
+            roi = img[y1:y2, x1:x2]
+
+        if len(img.shape) == 3:
+            roi = img[y1:y2, x1:x2, 0:3]
+        offset = [abs(x1), abs(y1)]
+        return roi, offset
+
+    @staticmethod
     def getMaskByColor(img, color):
         lower_limit, upper_limit = Colors.getColorLimits(color=color)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -83,7 +115,16 @@ class ImageDetectionUtil:
 
     @staticmethod
     def getMaskByLimits(hsv, lower_limit, upper_limit):
-        return cv2.inRange(hsv, lower_limit, upper_limit)
+        print("getMaskByLimits-----------------------------------------")
+        print(upper_limit)
+        print(lower_limit)
+        print(hsv)
+        mask = None
+        try:
+            mask = cv2.inRange(hsv, lower_limit, upper_limit)
+        except:
+            print("DANGER")
+        return mask
 
 
     @staticmethod

@@ -21,7 +21,7 @@ COLOR_WHITE = (360, [0, 0, 0], [0, 0, 0])
 COLOR_BLACK = (360, [255, 255, 255], [255, 255, 255])
 
 # Color to filter
-FILTER_COLOR = COLOR_GREEN
+FILTER_COLOR = COLOR_RED
 
 # HSV Detection Values
 HSV_LIMIT_UPPER = 255

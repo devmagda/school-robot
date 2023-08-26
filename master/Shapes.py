@@ -8,6 +8,7 @@ import ImageUtils
 class Rectangle:
 
     def __init__(self, a, b, c, d, margin=0):
+
         x = [margin, margin]
         # self.position = [a + x, b + x, c + x, d + x]
         a1, a2 = a
@@ -37,12 +38,20 @@ class Rectangle:
         return Rectangle(a, b, c, d)
 
     @staticmethod
-    def fromTwoCorners(x1, y1, x2, y2):
-        b = (x1, y1)
-        a = (x2, y1)
-        c = (x2, y2)
-        d = (x1, y2)
-        return Rectangle(a, b, c, d)
+    def fromTwoCorners(x1, y1, x2, y2, margin=10):
+        if x1 < 0:
+            x1 = 0 + margin
+        if y1 < 0:
+            y1 = 0 + margin
+        if x2 < 0:
+            x2 = 10 + margin
+        if y2 < 0:
+            y2 = 0 + margin
+        a = (x1, y1)
+        b = (x2, y1)
+        c = (x1, y2)
+        d = (x2, y2)
+        return Rectangle(a, b, c, d, margin=10)
 
     def contains(self, other):
         x, _, _, y = self.position

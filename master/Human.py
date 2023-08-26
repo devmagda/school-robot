@@ -1,4 +1,5 @@
 import Constants
+import ImageUtils
 from ImageUtils import ImageDetectionUtil
 from Shapes import Rectangle
 
@@ -16,21 +17,18 @@ class Face(Rectangle):
     @staticmethod
     def getValidFaces(gray, eyeCascade, faceCascade):
         faces = Face.getFromImg(gray, faceCascade)
+        c = 0;
         validFaces = []
-
         if len(faces) == 0:
             return [], []
 
         for face in faces:
-            a, b, c, d = face.position
-            x1 = a[0]
-            y1 = a[1]
-            x2 = d[0]
-            y2 = d[1]
-            roi = gray[y1:y2, x1:x2]
-            eyes = Eye.getFromImg(roi, eyeCascade, offset=[x1, y1])
+            roi, offset = ImageUtils.ImageDetectionUtil.getSubImage(gray, face.position)
+            eyes = Eye.getFromImg(roi, eyeCascade, offset=offset)
             if len(eyes) >= 2:
                 validFaces.append(face)
+                c = c + 1
+                ImageUtils.ImageDetectionUtil.helperShow(roi, 'Faces_' + str(c))
 
         # faces = list(filter(lambda f: (Eye.getEyesInsidePosition(f, eyes) >= 2) or Constants.FILTER_FACES , faces))
         return faces, eyes
