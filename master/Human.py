@@ -17,10 +17,13 @@ class Face(Rectangle):
     @staticmethod
     def getValidFaces(gray, eyeCascade, faceCascade, scale=1.0):
 
+        found = False
+
         # Scale image
         gray = ImageUtils.ImageDetectionUtil.scaleImage(gray, scale)
+
         faces = Face.getFromImg(gray, faceCascade)
-        eyes = None
+
         c = 0
 
         validFaces = []
@@ -34,16 +37,17 @@ class Face(Rectangle):
             eyes = Eye.getFromImg(roi, eyeCascade, offset=offset)
             x = len(eyes)
             if x >= 2 or not Constants.FILTER_FACES:
+                found = True
                 face.scale(1/scale)
                 validFaces.append(face)
                 c = c + 1
-                ImageUtils.ImageDetectionUtil.helperShow(roi, 'Faces_' + str(c))
+                ImageUtils.ImageDetectionUtil.helperShow(roi, 'Faces')
 
-        return validFaces
+        return validFaces, found
 
     @staticmethod
     def getFromImg(gray, cascade):
-        return ImageDetectionUtil.getObjectByCascade(cascade, gray)
+        return ImageDetectionUtil.getObjectByCascade(cascade, gray, color=Constants.FACES_COLOR)
 
 
 class Eye(Rectangle):
@@ -54,4 +58,4 @@ class Eye(Rectangle):
 
     @staticmethod
     def getFromImg(image, cascade, offset=[0, 0]):
-        return ImageDetectionUtil.getObjectByCascade(cascade, image, offset)
+        return ImageDetectionUtil.getObjectByCascade(cascade, image, offset, color=Constants.EYES_COLOR)

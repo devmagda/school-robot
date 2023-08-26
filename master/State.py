@@ -30,12 +30,14 @@ class State:
 
         # Objects to Track
         self.faces = None
+        self.found = False
         self.eyes = None
         self.trashes = None
         # self.qrcodes = None
 
         # Point cloud to find objects
         self.cloud = None
+
 
 
 
@@ -48,21 +50,23 @@ class State:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # Updating values
-        self.faces= Face.getValidFaces(gray, self.eye_cascade, self.face_cascade, scale=0.333)
+        self.faces, self.found = Face.getValidFaces(gray, self.eye_cascade, self.face_cascade, scale=Constants.SCALE_FACE_DETECTION)
         # print("HSV: " + str(hsv))
-        self.cloud = self.cpGreen.calculate(hsv, self.sift)
+        self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
         if self.cloud is not None:
             self.trashes = self.cloud.getAsPositions()
 
     def visualize(self, img):
-        # for face in self.faces:
-        #     face.draw(img, True, color=Constants.COLOR_GREEN)
 
-        for eye in self.eyes:
-           eye.draw(img, True, color=Constants.COLOR_PINK)
+        if self.found:
+            for face in self.faces:
+                face.draw(img, True)
+
+        # for eye in self.eyes:
+        #   eye.draw(img, True, color=Constants.COLOR_PINK)
 
         for trash in self.trashes:
-            trash.draw(img, True, color=Constants.COLOR_RED)
+            trash.draw(img, True)
 
 
         # if self.cloud.keypoints == None:

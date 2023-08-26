@@ -17,8 +17,8 @@ class ColorPicker:
         self.lower, self.upper = Colors.getColorLimits(color)
         self.count = count
 
-    def calculate(self, hsv, sift):
-        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count)
+    def calculate(self, hsv, sift, scale=1.0):
+        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale)
 
 class Colors:
 
@@ -53,7 +53,7 @@ class ImageDetectionUtil:
         try:
             cv2.imshow(title, img)
         except:
-            print("Cant show image")
+            True
 
     @staticmethod
     def getKeyPointsByColor(img, color, sift) -> Any:
@@ -79,7 +79,7 @@ class ImageDetectionUtil:
         return bbox
 
     @staticmethod
-    def getObjectByCascade(cascade, gray, offset=[0, 0]) -> [Shapes.Rectangle]:
+    def getObjectByCascade(cascade, gray, offset=[0, 0], color=Constants.COLOR_BLACK) -> [Shapes.Rectangle]:
         xOffset = offset[0]
         yOffset = offset[1]
         faces = cascade.detectMultiScale(gray, 1.1, 4)
@@ -87,7 +87,7 @@ class ImageDetectionUtil:
         for (x, y, w, h) in faces:
             x = xOffset + x
             y = yOffset + y
-            ret.append(Shapes.Rectangle([x, y], [x + w, y], [x, y + h], [x + w, y + h]))
+            ret.append(Shapes.Rectangle([x, y], [x + w, y], [x, y + h], [x + w, y + h], color=color))
         return ret
 
     @staticmethod

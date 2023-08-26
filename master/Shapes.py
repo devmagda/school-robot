@@ -31,7 +31,7 @@ class Rectangle:
         self.position = (a, b, c, d)
         self.center = Rectangle.center((a, d, c, d))
 
-    def __init__(self, a, b, c, d, margin=0):
+    def __init__(self, a, b, c, d, margin=0, color=Constants.COLOR_BLACK):
         a1, a2 = a
         b1, b2 = b
         c1, c2 = c
@@ -44,6 +44,7 @@ class Rectangle:
         self.position = [a, b, c, d]
         self.center = Rectangle.center((a, b, c, d))
         self.selected = False
+        self.color = color
 
     def __str__(self):
         text = "Rectangle: " + str(self.position) + " -> " + str(self.center)
@@ -99,19 +100,19 @@ class Rectangle:
             return pos
         return Rectangle((-100, -100), (-100, -100), (-100, -100), (-100, -100))
 
-    def draw(self, img, drawOutline=False, color=Constants.COLOR_WHITE, thickness=1):
+    def draw(self, img, drawOutline=False, thickness=1):
         a, b, c, d = self.position
         x, y = self.center
         text = str(x) + ', ' + str(y)
 
         if drawOutline:
-            Rectangle.drawLine(img, a, b, color, thickness)
-            Rectangle.drawLine(img, a, c, color, thickness)
-            Rectangle.drawLine(img, b, d, color, thickness)
-            Rectangle.drawLine(img, c, d, color, thickness)
+            Rectangle.drawLine(img, a, b, self.color, thickness)
+            Rectangle.drawLine(img, a, c, self.color, thickness)
+            Rectangle.drawLine(img, b, d, self.color, thickness)
+            Rectangle.drawLine(img, c, d, self.color, thickness)
 
-        Rectangle.drawLine(img, self.center, self.center, color, 6)
-        Rectangle.drawText(img, x, y, color=color, text=text)
+        Rectangle.drawLine(img, self.center, self.center, self.color, 6)
+        Rectangle.drawText(img, x, y, color=self.color, text=text)
 
     @staticmethod
     def drawLine(img, a, b, color, t):

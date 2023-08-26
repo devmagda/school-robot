@@ -11,17 +11,19 @@ import Shapes
 class PointCloud:
 
     @staticmethod
-    def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5):
+    def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5, scale=1.0):
         # print("hsv______________")
         # print(hsv)
+        hsv = ImageUtils.ImageDetectionUtil.scaleImage(hsv, scale=scale)
         mask = ImageUtils.ImageDetectionUtil.getMaskByLimits(hsv, lowerLimit, upperLimit)
+        mask = cv2.fastNlMeansDenoising(mask, None, h=20,  templateWindowSize=3, searchWindowSize=5)
         bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
 
         x1, y1, x2, y2 = 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT
         if bbox is not None:
             x1, y1, x2, y2 = bbox
 
-        pos = Shapes.Rectangle.fromTwoCorners(x1, y1, x2, y2, margin=50)
+        pos = Shapes.Rectangle.fromTwoCorners(x1, y1, x2, y2, margin=100)
         cut, offset = ImageUtils.ImageDetectionUtil.getSubImage(hsv, pos.position)
         if cut is not None and len(cut) != []:
             # print("fromList-------------------------------------------------")
@@ -33,20 +35,20 @@ class PointCloud:
             ImageUtils.ImageDetectionUtil.helperShow(mask, 'Limits')
 
             kp = ImageUtils.ImageDetectionUtil.getKeyPointsByMask(mask, sift)
-            return PointCloud.fromKeypoints(kp, count, offset=offset)
+            return PointCloud.fromKeypoints(kp, count, offset=offset, scale=1/scale)
         return None
 
 
     @staticmethod
-    def fromKeypoints(keypoints, count=5, offset=[0, 0]):
+    def fromKeypoints(keypoints, count=5, offset=[0, 0], scale=1.0):
         nparray = np.empty((len(keypoints), 2), np.float32) # creates empty 2d numpy array
 
         xOffset = offset[0]
         yOffset = offset[1]
 
         for i in range(len(keypoints)):
-            x = np.float32(keypoints[i].pt[0] + xOffset)
-            y = np.float32(keypoints[i].pt[1] + yOffset)
+            x = np.float32(int(keypoints[i].pt[0] * scale) + xOffset)
+            y = np.float32(int(keypoints[i].pt[1] * scale) + yOffset)
             nparray[i] = (x, y)
 
         return PointCloud(nparray, count, keypoints=keypoints)
