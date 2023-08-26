@@ -40,16 +40,17 @@ def captureLoop():
 
 def printFps():
     global last
-    diff = (time.time_ns() - last) / 1000000000
+    diff_sec = (time.time_ns() - last) / 1000000000
+    diff_mil = int(diff_sec * 1000)
     last = time.time_ns()
-    fps = int(1 / diff)
-    print(str(fps) + " Frames per second")
+    fps = int(1 / diff_sec)
+    print(str(fps) + " Fps | " + str(diff_mil) + "ms" )
 
 
 def viewLoop():
     global image
     global active
-    image = ImageUtils.ImageDetectionUtil.scaleImage(image, 125)
+    image = ImageUtils.ImageDetectionUtil.scaleImage(image, 1.25)
     cv2.imshow('Web Capture', image)
     # print("--------------------------------")
 

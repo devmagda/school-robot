@@ -48,15 +48,15 @@ class State:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # Updating values
-        self.faces, self.eyes = Face.getValidFaces(gray, self.eye_cascade, self.face_cascade)
+        self.faces= Face.getValidFaces(gray, self.eye_cascade, self.face_cascade, scale=0.333)
         # print("HSV: " + str(hsv))
         self.cloud = self.cpGreen.calculate(hsv, self.sift)
         if self.cloud is not None:
             self.trashes = self.cloud.getAsPositions()
 
     def visualize(self, img):
-        for face in self.faces:
-            face.draw(img, True, color=Constants.COLOR_GREEN)
+        # for face in self.faces:
+        #     face.draw(img, True, color=Constants.COLOR_GREEN)
 
         for eye in self.eyes:
            eye.draw(img, True, color=Constants.COLOR_PINK)

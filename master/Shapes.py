@@ -7,10 +7,31 @@ import ImageUtils
 
 class Rectangle:
 
-    def __init__(self, a, b, c, d, margin=0):
+    def scale(self, factor):
+        a, b, c, d = self.position
+        a1, a2 = a
+        b1, b2 = b
+        c1, c2 = c
+        d1, d2 = d
 
-        x = [margin, margin]
-        # self.position = [a + x, b + x, c + x, d + x]
+        a1 = int(a1 * factor)
+        a2 = int(a2 * factor)
+        b1 = int(b1 * factor)
+        b2 = int(b2 * factor)
+        c1 = int(c1 * factor)
+        c2 = int(c2 * factor)
+        d1 = int(d1 * factor)
+        d2 = int(d2 * factor)
+
+        a = [a1, a2]  # upper left
+        b = [b1, b2]  # upper right
+        c = [c1, c2]  # lower left
+        d = [d1, d2]  # lower right
+
+        self.position = (a, b, c, d)
+        self.center = Rectangle.center((a, d, c, d))
+
+    def __init__(self, a, b, c, d, margin=0):
         a1, a2 = a
         b1, b2 = b
         c1, c2 = c

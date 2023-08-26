@@ -39,9 +39,9 @@ class Colors:
 class ImageDetectionUtil:
 
     @staticmethod
-    def scaleImage(img, scale=100):
-        width = int(img.shape[1] * scale / 100)
-        height = int(img.shape[0] * scale / 100)
+    def scaleImage(img, scale=1.0):
+        width = int(img.shape[1] * scale)
+        height = int(img.shape[0] * scale)
         dim = (width, height)
 
         # resize image
