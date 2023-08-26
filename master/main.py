@@ -34,6 +34,12 @@ def captureLoop():
     _, image = cap.read()
     state.update(image)
     state.visualize(image)
+    if Constants.INFO_FPS:
+        printFps()
+
+
+def printFps():
+    global last
     diff = (time.time_ns() - last) / 1000000000
     last = time.time_ns()
     fps = int(1 / diff)

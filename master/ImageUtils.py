@@ -115,15 +115,15 @@ class ImageDetectionUtil:
 
     @staticmethod
     def getMaskByLimits(hsv, lower_limit, upper_limit):
-        print("getMaskByLimits-----------------------------------------")
-        print(upper_limit)
-        print(lower_limit)
-        print(hsv)
+        # print("getMaskByLimits-----------------------------------------")
+        # print(upper_limit)
+        # print(lower_limit)
+        # print(hsv)
         mask = None
         try:
             mask = cv2.inRange(hsv, lower_limit, upper_limit)
         except:
-            print("DANGER")
+            return None
         return mask
 
 

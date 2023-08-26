@@ -39,5 +39,10 @@ TEXT_FONT = cv2.FONT_HERSHEY_SIMPLEX
 TEXT_FONT_SCALE = .5
 TEXT_FONT_THICK = 1
 
-FILTER_FACES = False
+#
+FILTER_FACES = True
 
+# Scaling
+
+# Info to print
+INFO_FPS = True

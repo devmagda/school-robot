@@ -12,8 +12,8 @@ class PointCloud:
 
     @staticmethod
     def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5):
-        print("hsv______________")
-        print(hsv)
+        # print("hsv______________")
+        # print(hsv)
         mask = ImageUtils.ImageDetectionUtil.getMaskByLimits(hsv, lowerLimit, upperLimit)
         bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
 
@@ -24,10 +24,10 @@ class PointCloud:
         pos = Shapes.Rectangle.fromTwoCorners(x1, y1, x2, y2, margin=50)
         cut, offset = ImageUtils.ImageDetectionUtil.getSubImage(hsv, pos.position)
         if cut is not None and len(cut) != []:
-            print("fromList-------------------------------------------------")
-            print(offset)
-            print(bbox)
-            print(cut)
+            # print("fromList-------------------------------------------------")
+            # print(offset)
+            # print(bbox)
+            # print(cut)
             mask = ImageUtils.ImageDetectionUtil.getMaskByLimits(cut, lowerLimit, upperLimit)
 
             ImageUtils.ImageDetectionUtil.helperShow(mask, 'Limits')
@@ -41,9 +41,12 @@ class PointCloud:
     def fromKeypoints(keypoints, count=5, offset=[0, 0]):
         nparray = np.empty((len(keypoints), 2), np.float32) # creates empty 2d numpy array
 
+        xOffset = offset[0]
+        yOffset = offset[1]
+
         for i in range(len(keypoints)):
-            x = np.float32(keypoints[i].pt[0] + offset[0])
-            y = np.float32(keypoints[i].pt[1] + offset[1])
+            x = np.float32(keypoints[i].pt[0] + xOffset)
+            y = np.float32(keypoints[i].pt[1] + yOffset)
             nparray[i] = (x, y)
 
         return PointCloud(nparray, count, keypoints=keypoints)

@@ -17,15 +17,19 @@ class Face(Rectangle):
     @staticmethod
     def getValidFaces(gray, eyeCascade, faceCascade):
         faces = Face.getFromImg(gray, faceCascade)
-        c = 0;
+        eyes = None
+        c = 0
+
         validFaces = []
+
         if len(faces) == 0:
+            # print("No faces found")
             return [], []
 
         for face in faces:
             roi, offset = ImageUtils.ImageDetectionUtil.getSubImage(gray, face.position)
             eyes = Eye.getFromImg(roi, eyeCascade, offset=offset)
-            if len(eyes) >= 2:
+            if len(eyes) >= 2 or Constants.FILTER_FACES:
                 validFaces.append(face)
                 c = c + 1
                 ImageUtils.ImageDetectionUtil.helperShow(roi, 'Faces_' + str(c))
