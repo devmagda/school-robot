@@ -61,19 +61,24 @@ class Rectangle:
 
     @staticmethod
     def fromTwoCorners(x1, y1, x2, y2, margin=10, color=Constants.COLOR_BLACK):
-        if x1 < 0:
-            x1 = 0 + margin
-        if y1 < 0:
-            y1 = 0 + margin
-        if x2 < 0:
-            x2 = 10 + margin
-        if y2 < 0:
-            y2 = 0 + margin
+        x1, y1, x2, y2 = Rectangle.negate(x1, y1, x2, y2, margin=0)
         a = (x1, y1)
         b = (x2, y1)
         c = (x1, y2)
         d = (x2, y2)
         return Rectangle(a, b, c, d, margin=10, color=color)
+
+    @staticmethod
+    def negate(x1, y1, x2, y2, margin=10):
+        if x1 < 2:
+            x1 = 1
+        if y1 < 2:
+            y1 = 1
+        if x2 > Constants.SCREEN_WIDTH - 2:
+            x2 = Constants.SCREEN_WIDTH - 1
+        if y2 > Constants.SCREEN_HEIGHT - 2:
+            y2 = Constants.SCREEN_HEIGHT - 1
+        return x1, y1, x2, y2
 
     def contains(self, other):
         x, _, _, y = self.position
@@ -104,7 +109,6 @@ class Rectangle:
         a, b, c, d = self.position
         x, y = self.center
         text = str(x) + ', ' + str(y)
-
         if drawOutline:
             Rectangle.drawLine(img, a, b, self.color, thickness)
             Rectangle.drawLine(img, a, c, self.color, thickness)

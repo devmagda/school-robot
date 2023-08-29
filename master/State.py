@@ -49,7 +49,7 @@ class State:
         # print("HSV: " + str(hsv))
         self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
         if self.cloud is not None:
-            self.trashes = self.cloud.getAsPositions()
+            self.trashes = self.cloud.getAsPositions(img=img)
 
     def visualize(self, img):
 

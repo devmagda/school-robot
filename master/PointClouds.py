@@ -19,11 +19,12 @@ class PointCloud:
         mask = cv2.fastNlMeansDenoising(mask, None, h=20,  templateWindowSize=3, searchWindowSize=5)
         bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
 
+
         x1, y1, x2, y2 = 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT
         if bbox is not None:
             x1, y1, x2, y2 = bbox
-
-        pos = Shapes.Rectangle.fromTwoCorners(x1, y1, x2, y2, margin=100)
+        # print(str(x1), str(y1), str(x2), str(y2), " == ")
+        pos = Shapes.Rectangle.fromTwoCorners(x1, y1, x2, y2, margin=0, color=Constants.COLOR_GREEN)
         cut, offset = ImageUtils.ImageDetectionUtil.getSubImage(hsv, pos.position)
         if cut is not None and len(cut) != []:
             # print("fromList-------------------------------------------------")
@@ -90,14 +91,19 @@ class PointCloud:
         return cv2.kmeans(points, n, None, Constants.KM_CRITERIA, Constants.KM_TRIES, Constants.KM_FLAGS)
 
 
-    def getAsPositions(self):
+    def getAsPositions(self, img=None):
         rects = []
         if self.centers is None:
             return rects
         if not len(self.centers) == 0:
             for c in self.centers:
                 x, y = int(c[0]), int(c[1])
-                rects.append(Shapes.Rectangle.fromCenter((x, y), color=self.color))
+                rect = Shapes.Rectangle.fromCenter((x, y), color=self.color)
+                if img is not None:
+                    b,g,r = img[y, x]
+                    color = (0, [int(r), int(g), int(b)], [int(b), int(g), int(r)])
+                    rect.color = color
+                rects.append(rect)
         return rects
 
 
