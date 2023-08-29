@@ -50,10 +50,11 @@ class ImageDetectionUtil:
 
     @staticmethod
     def helperShow(img, title='Default'):
-        try:
-            cv2.imshow(title, img)
-        except:
-            True
+        if Constants.SHOW_HELPER:
+            try:
+                cv2.imshow(title, img)
+            except:
+                True
 
     @staticmethod
     def getKeyPointsByColor(img, color, sift) -> Any:

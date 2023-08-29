@@ -6,6 +6,7 @@ import cv2
 
 import Constants
 import ImageUtils
+from Shapes import Rectangle
 from State import State
 
 global active
@@ -23,11 +24,13 @@ def initCaptureDevice() -> cv2.VideoCapture:
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_HEIGHT)
-
     _, image = cap.read()
     cv2.imshow('Web Capture', image)
     return cap
 
+def aid(img):
+    p = (1, 1)
+    Rectangle.drawLine(img, p, p, Constants.COLOR_RED, 10)
 
 def captureLoop():
     global image, cap, state, last
@@ -51,6 +54,7 @@ def viewLoop():
     global image
     global active
     image = ImageUtils.ImageDetectionUtil.scaleImage(image, 1.25)
+    aid(image)
     cv2.imshow('Web Capture', image)
     # print("--------------------------------")
 

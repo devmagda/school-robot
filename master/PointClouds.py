@@ -19,7 +19,7 @@ class PointCloud:
         mask = cv2.fastNlMeansDenoising(mask, None, h=20,  templateWindowSize=3, searchWindowSize=5)
         bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
 
-
+        print(bbox)
         x1, y1, x2, y2 = 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT
         if bbox is not None:
             x1, y1, x2, y2 = bbox

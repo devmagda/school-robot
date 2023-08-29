@@ -27,7 +27,7 @@ class Faces():
             roi, offset = ImageUtils.ImageDetectionUtil.getSubImage(gray, face.position)
             eyes = Eyes.getFromImg(roi, eyeCascade, offset=offset)
             x = len(eyes)
-            if x >= 2 or not Constants.FILTER_FACES:
+            if x >= Constants.EYES_MINIMUM or not Constants.FILTER_FACES:
                 found = True
                 face.scale(1/scale)
                 validFaces.append(face)
