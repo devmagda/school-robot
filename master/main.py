@@ -54,8 +54,9 @@ def viewLoop():
     global image
     global active
     image = ImageUtils.ImageDetectionUtil.scaleImage(image, 1.25)
-    aid(image)
-    cv2.imshow('Web Capture', image)
+    # aid(image)
+    mirrored = ImageUtils.ImageDetectionUtil.mirror(image, Constants.MIRROR_HORIZONTAL)
+    cv2.imshow('Web Capture', mirrored)
     # print("--------------------------------")
 
 

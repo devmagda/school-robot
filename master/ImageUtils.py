@@ -39,6 +39,10 @@ class Colors:
 class ImageDetectionUtil:
 
     @staticmethod
+    def mirror(img, mode):
+        return cv2.flip(img, mode)
+
+    @staticmethod
     def scaleImage(img, scale=1.0):
         width = int(img.shape[1] * scale)
         height = int(img.shape[0] * scale)
