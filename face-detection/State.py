@@ -5,7 +5,7 @@ import numpy as np
 
 import Constants
 import ImageUtils
-from Human import Faces
+from Human import FacesUtil
 from ImageUtils import ImageDetectionUtil
 from PointClouds import PointCloud
 from Shapes import Rectangle
@@ -45,7 +45,7 @@ class State:
 
         # Updating values
         self.faces, self.found = \
-            Faces.getValidFaces(gray, self.eye_cascade, self.face_cascade, scale=Constants.SCALE_FACE_DETECTION)
+            FacesUtil.get_valid_faces(gray, self.eye_cascade, self.face_cascade, scale=Constants.SCALE_FACE_DETECTION)
         # print("HSV: " + str(hsv))
         self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
         if self.cloud is not None:
