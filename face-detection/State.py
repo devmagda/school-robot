@@ -4,11 +4,8 @@ import cv2
 import numpy as np
 
 import Constants
-import ImageUtils
 from Human import FacesUtil
-from ImageUtils import ImageDetectionUtil
-from PointClouds import PointCloud
-from Shapes import Rectangle
+from ImageUtils import ColorPicker, ImageUtils
 
 
 def getFaceDistance(a, b) -> float:
@@ -26,13 +23,14 @@ class State:
         self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
         # Color Selectors
-        self.cpGreen = ImageUtils.ColorPicker(Constants.COLOR_GREEN, Constants.KM_GROUP_COUNT)
+        self.cpGreen = ColorPicker(Constants.COLOR_GREEN, Constants.KM_GROUP_COUNT)
 
         # Objects to Track
         self.faces = None
         self.found = False
         self.eyes = None
         self.trashes = None
+        self.old = None
         # self.qrcodes = None
 
         # Point cloud to find objects
@@ -45,11 +43,38 @@ class State:
 
         # Updating values
         self.faces, self.found = \
-            FacesUtil.get_valid_faces(gray, self.eye_cascade, self.face_cascade, scale=Constants.SCALE_FACE_DETECTION)
+            FacesUtil.get_valid_faces(gray, self.eye_cascade, self.face_cascade, scale=Constants.FACE_DETECTION_SCALE)
+
+        if self.found and self.old is not None and Constants.DO_FACE_COMPARISON:
+            x, y, w, h = self.old.to_x_y_width_height()
+            scale = 1/4
+            margin = 50
+
+            img1 = ImageUtils.getSubImage(img, x, y, w, h, margin=Constants.FACE_COMPARISON_MARGIN)
+            img1 = ImageUtils.scaleImage(img1, scale=Constants.FACE_COMPARISON_SCALE)
+
+            cv2.imshow('Web Capture img2', img1)
+            for i, face in enumerate(self.faces):
+                x, y, w, h = face.to_x_y_width_height()
+                img2 = ImageUtils.getSubImage(img, x, y, w, h, margin=Constants.FACE_COMPARISON_MARGIN)
+                img2 = ImageUtils.scaleImage(img2, scale=Constants.FACE_COMPARISON_SCALE)
+                verified, distance, threshold = FacesUtil.compare(img1, img2)
+                try:
+                    d = FacesUtil.analyze(img1)
+                    print(d)
+                except:
+                    pass
+                cv2.imshow(f'Web Capture img2 {i}', img2)
+                print(verified, distance, threshold, end='')
+        print()  # print after to still have a new line
+
+        if self.found:
+            self.old = self.faces[0]
+
         # print("HSV: " + str(hsv))
-        self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
-        if self.cloud is not None:
-            self.trashes = self.cloud.getAsPositions(img=img)
+        # self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
+        # if self.cloud is not None:
+        #     self.trashes = self.cloud.getAsPositions(img=img)
 
     def visualize(self, img):
 
@@ -60,8 +85,8 @@ class State:
         # for eye in self.eyes:
         #   eye.draw(img, True, color=Constants.COLOR_PINK)
 
-        for trash in self.trashes:
-            trash.draw(img, True)
+        # for trash in self.trashes:
+        #     trash.draw(img, True)
 
         # if self.cloud.keypoints == None:
         #     for point in self.cloud.points:

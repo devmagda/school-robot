@@ -97,13 +97,23 @@ class Rectangle:
 
     @staticmethod
     def getRectByColor(img, color):
-        mask = ImageUtils.ImageDetectionUtil.getMaskByColor(img, color)
-        bbox = ImageUtils.ImageDetectionUtil.getBoxPointsByMask(mask)
+        mask = ImageUtils.ImageUtils.getMaskByColor(img, color)
+        bbox = ImageUtils.ImageUtils.getBoxPointsByMask(mask)
         if bbox is not None:
             x1, y1, x2, y2 = bbox
             pos = Rectangle.fromTwoCorners(x1, y1, x2, y2)
             return pos
         return Rectangle((-100, -100), (-100, -100), (-100, -100), (-100, -100))
+
+    def to_x_y_width_height(self):
+        a, b, c, d = self.position
+        x1, y1 = a
+        x2, y2 = d
+        w = x2 - x1
+        h = y2 - y1
+        return x1, y1, w, h
+
+
 
     def draw(self, img, drawOutline=False, thickness=1):
         a, b, c, d = self.position

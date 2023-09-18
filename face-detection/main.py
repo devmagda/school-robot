@@ -3,6 +3,7 @@ import time
 from typing import Any
 
 import cv2
+import numpy as np
 
 import Constants
 import ImageUtils
@@ -14,7 +15,7 @@ global cap
 global state
 global image
 global last
-
+global fps_tracker
 
 blue = [255, 0, 0]
 
@@ -37,8 +38,6 @@ def captureLoop():
     _, image = cap.read()
     state.update(image)
     state.visualize(image)
-    if Constants.INFO_FPS:
-        printFps()
 
 
 def printFps():
@@ -47,16 +46,16 @@ def printFps():
     diff_mil = int(diff_sec * 1000)
     last = time.time_ns()
     fps = int(1 / diff_sec)
-    print(str(fps) + " Fps | " + str(diff_mil) + "ms" )
+    print(f'{fps} Fps | {diff_mil} ms -> ', end='')
 
 
 def viewLoop():
     global image
     global active
-    image = ImageUtils.ImageDetectionUtil.scaleImage(image, 1.25)
+    image = ImageUtils.ImageUtils.scaleImage(image, 1.25)
     # aid(image)
     if Constants.MIRROR_VIEW:
-        image = ImageUtils.ImageDetectionUtil.mirror(image, Constants.MIRROR_HORIZONTAL)
+        image = ImageUtils.ImageUtils.mirror(image, Constants.MIRROR_HORIZONTAL)
     cv2.imshow('Web Capture', image)
     # print("--------------------------------")
 
@@ -71,12 +70,15 @@ def controllerLoop():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     last = 0
+    fps_tracker = list()
     cap = initCaptureDevice()
     state = State()
     _, image = cap.read()
     active = True
 
     while active:
+        if Constants.INFO_FPS:
+            printFps()
         captureLoop()
         controllerLoop()
         viewLoop()

@@ -36,7 +36,7 @@ class Colors:
         return lowerlimit, upperlimit
 
 
-class ImageDetectionUtil:
+class ImageUtils:
 
     @staticmethod
     def mirror(img, mode):
@@ -57,20 +57,20 @@ class ImageDetectionUtil:
         if Constants.SHOW_HELPER:
             try:
                 cv2.imshow(title, img)
-            except:
-                True
+            except FileNotFoundError:
+                pass
 
     @staticmethod
     def getKeyPointsByColor(img, color, sift) -> Any:
-        mask = ImageDetectionUtil.getMaskByColor(img, color)
-        return ImageDetectionUtil.getKeyPointsByMask(mask, sift)
+        mask = ImageUtils.getMaskByColor(img, color)
+        return ImageUtils.getKeyPointsByMask(mask, sift)
 
     @staticmethod
     def getKeyPoints(img, sift, color=None):
         if color is None:
-            return ImageDetectionUtil.getKeyPointsByMask(img, sift)
+            return ImageUtils.getKeyPointsByMask(img, sift)
         else:
-            return ImageDetectionUtil.getKeyPointsByColor(img, color)
+            return ImageUtils.getKeyPointsByColor(img, color)
 
     @staticmethod
     def getKeyPointsByMask(mask, sift):
@@ -96,7 +96,7 @@ class ImageDetectionUtil:
         return ret
 
     @staticmethod
-    def getSubImage(img, position):
+    def getSubImageRect(img, position):
         a, b, c, d = position
         x1 = a[0]
         y1 = a[1]
@@ -110,6 +110,30 @@ class ImageDetectionUtil:
             roi = img[y1:y2, x1:x2, 0:3]
         offset = [abs(x1), abs(y1)]
         return roi, offset
+
+    @staticmethod
+    def getSubImage(image, x, y, width, height, margin=0):
+        double = margin * 2
+
+        x = x - margin
+        if x < 0:
+            x = 0
+
+        y = y - margin
+        if y < 0:
+            y = 0
+
+        width = width + double
+        height = height + double
+        if image is None:
+            raise ValueError('Image is missing')
+        roi = image[y:y + height, x:x + width]
+        if 0 in roi.shape:
+            raise IndexError(
+                'Either the image' + str(image.shape) + ' or the cropped image ' +
+                str(roi.shape) + ' are not in shape!'
+            )
+        return roi
 
     @staticmethod
     def getMaskByColor(img, color):

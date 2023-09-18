@@ -1,6 +1,5 @@
 import Constants
-import ImageUtils
-from ImageUtils import ImageDetectionUtil
+from ImageUtils import ImageUtils
 
 
 class FacesUtil:
@@ -10,20 +9,18 @@ class FacesUtil:
     actions = ['age', 'gender', 'race', 'emotion']
 
     models = [
-        'VGG-Face',
-        'Facenet',
-        'Facenet512',
-        'OpenFace',
-        'DeepFace',
+        'VGG-Face',     # 2 Fps
+        'Facenet',      # 4 Fps
+        'Facenet512',   # 4 Fps
+        'OpenFace',     # 6 Fps
+        'DeepFace',     # 4 Fps
         'DeepID',
-        'ArcFace',
-        'Dlib',
-        'SFace',
+        'ArcFace',      # 3 Fps
     ]
-    model_name = models[0]
+    model_name = models[3]
 
     metrics = ['cosine', 'euclidean', 'euclidean_l2']
-    distance_metric = metrics[0]
+    distance_metric = metrics[2]
 
     backends = [
         'opencv',
@@ -35,7 +32,7 @@ class FacesUtil:
         'yolov8',
         'yunet',
     ]
-    detector_backend = backends[4]
+    detector_backend = backends[0]
 
     norms = [
         'base',
@@ -58,7 +55,7 @@ class FacesUtil:
         found = False
 
         # Scale image
-        gray = ImageUtils.ImageDetectionUtil.scaleImage(gray, scale)
+        gray = ImageUtils.scaleImage(gray, scale)
 
         faces = FacesUtil.getFromImg(gray, faceCascade)
 
@@ -71,7 +68,7 @@ class FacesUtil:
             return [], []
 
         for face in faces:
-            roi, offset = ImageUtils.ImageDetectionUtil.getSubImage(gray, face.position)
+            roi, offset = ImageUtils.getSubImageRect(gray, face.position)
             eyes = Eyes.getFromImg(roi, eyeCascade, offset=offset)
             x = len(eyes)
             if x >= Constants.EYES_MINIMUM or not Constants.FILTER_FACES:
@@ -79,13 +76,13 @@ class FacesUtil:
                 face.scale(1/scale)
                 valid_faces.append(face)
                 c = c + 1
-                ImageUtils.ImageDetectionUtil.helperShow(roi, 'Faces')
+                ImageUtils.helperShow(roi, 'Faces')
 
         return valid_faces, found
 
     @staticmethod
     def getFromImg(gray, cascade):
-        return ImageDetectionUtil.getObjectByCascade(cascade, gray, color=Constants.FACES_COLOR)
+        return ImageUtils.getObjectByCascade(cascade, gray, color=Constants.FACES_COLOR)
 
     @staticmethod
     def initialize(face):
@@ -138,6 +135,7 @@ class FacesUtil:
     @staticmethod
     def compare(face1, face2) -> tuple[int, float, float]:
         from deepface import DeepFace
+
         try:
             result = DeepFace.verify(
                 img1_path=face1,
@@ -147,13 +145,13 @@ class FacesUtil:
                 detector_backend=FacesUtil.detector_backend,
                 enforce_detection=True,
                 normalization=FacesUtil.normalization)
-            return int(result['verified']), result['distance'], result['threshold']
+            return result['verified'], result['distance'], result['threshold']
         except ValueError:
-            return -1, 0.0, 0.0
+            return False, 0.0, 0.0
 
 
 class Eyes:
 
     @staticmethod
     def getFromImg(image, cascade, offset=[0, 0]):
-        return ImageDetectionUtil.getObjectByCascade(cascade, image, offset, color=Constants.EYES_COLOR)
+        return ImageUtils.getObjectByCascade(cascade, image, offset, color=Constants.EYES_COLOR)
