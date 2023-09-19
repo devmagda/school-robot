@@ -76,12 +76,6 @@ class FacesUtil:
                 face.scale(1/scale)
                 valid_faces.append(face)
                 c = c + 1
-
-                for eye in eyes:
-                    eye.draw(roi, drawOutline=True)
-
-                ImageUtils.helperShow(roi, f'Faces_{c}', scale=1.0)
-
         return valid_faces, found
 
     @staticmethod
