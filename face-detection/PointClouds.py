@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import Constants
+import ImageUtils
 import Shapes
-from ImageUtils import ImageUtils
 
 
 class PointCloud:
@@ -14,39 +14,30 @@ class PointCloud:
     def fromLimits(hsv, sift,  lowerLimit, upperLimit, count=5, scale=1.0, color=Constants.COLOR_PINK):
         # print("hsv______________")
         # print(hsv)
-        hsv = ImageUtils.scaleImage(hsv, scale=scale)
-        mask = ImageUtils.getMaskByLimits(hsv, lowerLimit, upperLimit)
+        hsv = ImageUtils.ImageUtils.scaleImage(hsv, scale=scale)
+        mask = ImageUtils.ImageUtils.getMaskByLimits(hsv, lowerLimit, upperLimit)
         mask = cv2.fastNlMeansDenoising(mask, None, h=20,  templateWindowSize=3, searchWindowSize=5)
-
-
-
-        keypoints = ImageUtils.getKeyPoints(hsv, sift)
-        image_with_keypoints = cv2.drawKeypoints(hsv, keypoints, None)
-        ImageUtils.helperShow(image_with_keypoints, 'Keypoints', scale=1/2)
-
-
-        ImageUtils.helperShow(mask, 'Mask', scale=1/2)
-        bbox = ImageUtils.getBoxPointsByMask(mask)
+        bbox = ImageUtils.ImageUtils.getBoxPointsByMask(mask)
 
         x1, y1, x2, y2 = 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT
         if bbox is not None:
             x1, y1, x2, y2 = bbox
         # print(str(x1), str(y1), str(x2), str(y2), " == ")
         pos = Shapes.Rectangle.fromTwoCorners(x1, y1, x2, y2, margin=0, color=Constants.COLOR_GREEN)
-        cut, offset = ImageUtils.getSubImageRect(hsv, pos.position)
+        cut, offset = ImageUtils.ImageUtils.getSubImageRect(hsv, pos.position)
         if cut is not None and len(cut) != []:
             # print("fromList-------------------------------------------------")
             # print(offset)
             # print(bbox)
             # print(cut)
-            mask = ImageUtils.getMaskByLimits(cut, lowerLimit, upperLimit)
+            mask = ImageUtils.ImageUtils.getMaskByLimits(cut, lowerLimit, upperLimit)
 
-            ImageUtils.helperShow(mask, 'Limits')
+            ImageUtils.ImageUtils.helperShow(mask, 'Limits')
 
-            kp = ImageUtils.getKeyPointsByMask(mask, sift)
-
+            kp = ImageUtils.ImageUtils.getKeyPointsByMask(mask, sift)
             return PointCloud.fromKeypoints(kp, count, offset=offset, scale=1/scale, color=color)
         return None
+
 
     @staticmethod
     def fromKeypoints(keypoints, count=5, offset=[0, 0], scale=1.0, color=Constants.COLOR_PINK):
@@ -73,9 +64,11 @@ class PointCloud:
             self.group(count)
         # print("Done")
 
+
     def group(self, n):
         # graph = self.getElbowGraphData()
         self.compactness, self.labels, self.centers = PointCloud.kmeans(self.points, n)
+
 
     def getElbowGraphData(self):
         comps = []
@@ -91,9 +84,11 @@ class PointCloud:
         plt.show()
         return list
 
+
     @staticmethod
     def kmeans(points, n=5):
         return cv2.kmeans(points, n, None, Constants.KM_CRITERIA, Constants.KM_TRIES, Constants.KM_FLAGS)
+
 
     def getAsPositions(self, img=None):
         rects = []
@@ -110,6 +105,8 @@ class PointCloud:
                 rects.append(rect)
         return rects
 
+
+
     @staticmethod
     def fromImage(img, sift, color=None, count=5):
         selfkeypoints = None
@@ -117,3 +114,8 @@ class PointCloud:
         if keypoints is not None:
             return PointCloud.fromKeypoints(keypoints, Constants.KM_GROUP_COUNT)
         return None
+
+
+
+
+

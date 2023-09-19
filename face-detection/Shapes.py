@@ -8,14 +8,7 @@ import ImageUtils
 class Rectangle:
 
     def scale(self, factor):
-        x, y = self.center
-        x = int(x * factor)
-        y = int(y * factor)
-
         a, b, c, d = self.position
-
-        width = b[0] - a[0]
-
         a1, a2 = a
         b1, b2 = b
         c1, c2 = c
@@ -35,10 +28,8 @@ class Rectangle:
         c = [c1, c2]  # lower left
         d = [d1, d2]  # lower right
 
-        temp = Rectangle.fromCenter((x, y), margin=int(width / 2))
-
-        self.position = temp.position
-        self.center = Rectangle.center(self.position)
+        self.position = (a, b, c, d)
+        self.center = Rectangle.center((a, d, c, d))
 
     def __init__(self, a, b, c, d, margin=0, color=Constants.COLOR_BLACK):
         a1, a2 = a
@@ -122,6 +113,8 @@ class Rectangle:
         h = y2 - y1
         return x1, y1, w, h
 
+
+
     def draw(self, img, drawOutline=False, thickness=1):
         a, b, c, d = self.position
         x, y = self.center
@@ -160,7 +153,7 @@ class Rectangle:
     def drawText(img, x, y, color=Constants.COLOR_WHITE, text='No Text Specified'):
         _, _, rgb = color
         org = (x, y)
-        cv2.putText(img, text, org, Constants.TEXT_FONT, Constants.TEXT_FONT_SCALE, rgb, Constants.TEXT_FONT_THICK,
-                    cv2.LINE_AA)
+        cv2.putText(img, text, org, Constants.TEXT_FONT, Constants.TEXT_FONT_SCALE, rgb, Constants.TEXT_FONT_THICK, cv2.LINE_AA)
 
     # def getCenter(self, other) -> np.array:
+

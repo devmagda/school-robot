@@ -1,4 +1,3 @@
-import threading
 from typing import Any
 
 import cv2
@@ -24,7 +23,7 @@ class State:
         self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
         # Color Selectors
-        self.selector = ColorPicker(Constants.OBJECT_COLOR, Constants.KM_GROUP_COUNT)
+        self.cpGreen = ColorPicker(Constants.COLOR_GREEN, Constants.KM_GROUP_COUNT)
 
         # Objects to Track
         self.faces = None
@@ -32,7 +31,6 @@ class State:
         self.eyes = None
         self.trashes = None
         self.old = None
-        self.thread = None
         # self.qrcodes = None
 
         # Point cloud to find objects
@@ -49,6 +47,8 @@ class State:
 
         if self.found and self.old is not None and Constants.DO_FACE_COMPARISON:
             x, y, w, h = self.old.to_x_y_width_height()
+            scale = 1/4
+            margin = 50
 
             img1 = ImageUtils.getSubImage(img, x, y, w, h, margin=Constants.FACE_COMPARISON_MARGIN)
             img1 = ImageUtils.scaleImage(img1, scale=Constants.FACE_COMPARISON_SCALE)
@@ -71,9 +71,10 @@ class State:
         if self.found:
             self.old = self.faces[0]
 
-        self.cloud = self.selector.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
-        if self.cloud is not None:
-            self.trashes = self.cloud.getAsPositions(img=img)
+        # print("HSV: " + str(hsv))
+        # self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
+        # if self.cloud is not None:
+        #     self.trashes = self.cloud.getAsPositions(img=img)
 
     def visualize(self, img):
 
@@ -84,8 +85,8 @@ class State:
         # for eye in self.eyes:
         #   eye.draw(img, True, color=Constants.COLOR_PINK)
 
-        for trash in self.trashes:
-            trash.draw(img, True)
+        # for trash in self.trashes:
+        #     trash.draw(img, True)
 
         # if self.cloud.keypoints == None:
         #     for point in self.cloud.points:
