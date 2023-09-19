@@ -1,9 +1,6 @@
-# This is a sample Python script.
 import time
-from typing import Any
 
 import cv2
-import numpy as np
 
 import Constants
 import ImageUtils
@@ -17,11 +14,11 @@ global image
 global last
 global fps_tracker
 
-blue = [255, 0, 0]
 
 def initCaptureDevice() -> cv2.VideoCapture:
     # To capture video from webcam.
     global cap
+    global image
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_HEIGHT)

@@ -58,9 +58,9 @@ FACE_DETECTION_SCALE = 1
 SCALE_OBJECT_DETECTION = 1.0  # NEVER change this value
 
 # Info to print
-INFO_FPS = True
+INFO_FPS = False
 
-SHOW_HELPER = False
+SHOW_HELPER = True
 
 # Image Detection Utils
 MIRROR_HORIZONTAL = 1
@@ -68,3 +68,8 @@ MIRROR_VERTICAL = 0
 MIRROR_BOTH = -1
 
 MIRROR_VIEW = False
+
+API_URL = 'http://127.0.0.1:8000/'
+
+OBJECT_COLOR = COLOR_GREEN
+

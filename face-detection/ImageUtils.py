@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 
 import Constants
-import PointClouds
 import Shapes
 
 
@@ -18,7 +17,9 @@ class ColorPicker:
         self.count = count
 
     def calculate(self, hsv, sift, scale=1.0):
+        import PointClouds
         return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale, color=self.color)
+
 
 class Colors:
 
@@ -39,11 +40,36 @@ class Colors:
 class ImageUtils:
 
     @staticmethod
+    def fromByteString(image: str):
+        import numpy as np
+        image = image.encode('utf8')
+        image = np.asarray(bytearray(image), dtype='uint8')
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        return image
+
+    @staticmethod
+    def toByteString(image) -> str:
+        # Encoding the image
+        _, img_encode = cv2.imencode('.jpg', image)
+
+        # Converting the image into numpy array
+        data_encode = np.array(img_encode)
+
+        # Converting the array to bytes.
+        byte_encode = data_encode.tobytes()
+
+        byte_string = byte_encode.decode('utf8')
+        print(byte_string)
+        return byte_string
+
+    @staticmethod
     def mirror(img, mode):
         return cv2.flip(img, mode)
 
     @staticmethod
     def scaleImage(img, scale=1.0):
+        if img is None:
+            return None
         width = int(img.shape[1] * scale)
         height = int(img.shape[0] * scale)
         dim = (width, height)
@@ -53,11 +79,12 @@ class ImageUtils:
         return resized
 
     @staticmethod
-    def helperShow(img, title='Default'):
+    def helperShow(img, title='Default', scale=1.0):
+        img = ImageUtils.scaleImage(img, scale=scale)
         if Constants.SHOW_HELPER:
             try:
                 cv2.imshow(title, img)
-            except FileNotFoundError:
+            except:
                 pass
 
     @staticmethod
