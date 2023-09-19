@@ -41,14 +41,11 @@ class ImageUtils:
 
     @staticmethod
     def fromByteString(image: str):
+        import numpy as np
         image = image.encode('utf8')
         image = np.asarray(bytearray(image), dtype='uint8')
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
         return image
-
-    @staticmethod
-    def fromNumpyArray(array: np.ndarray):
-        return cv2.imdecode(array, cv2.IMREAD_COLOR)
 
     @staticmethod
     def toByteString(image) -> str:

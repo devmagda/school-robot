@@ -1,7 +1,6 @@
 from asyncio import sleep
 
 import cv2
-import numpy as np
 from fastapi import FastAPI
 
 import requests
@@ -18,28 +17,9 @@ app = FastAPI()
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
-
 class FaceComparisonData(BaseModel):
     last_seen: str
     whole: str
-
-
-class NumpyArrayInput(BaseModel):
-    data: list
-
-
-@app.post("/process_numpy_array")
-def process_numpy_array(numpy_array_input: NumpyArrayInput):
-    # Convert the received list back to a NumPy array
-    received_array = np.array(numpy_array_input.data)
-    image = ImageUtils.fromNumpyArray(received_array)
-
-    cv2.imwrite('T:\\yey.png', image)
-
-    # Perform some processing on the NumPy array (e.g., calculate the sum)
-    result = received_array.sum()
-
-    return {"result": result}
 
 
 @app.post('/faces/')
@@ -87,11 +67,15 @@ def say_hello(name: str):
 class Client:
 
     @staticmethod
-    def post_faces(numpy_array):
-        payload = {"data": numpy_array.tolist()}
-        Client.post('faces', payload)
+    def post_faces(last_seen, whole):
+        data = {
+            'last_seen': last_seen,
+            'whole': whole
+        }
+        Client.post('faces', data)
+
 
     @staticmethod
     def post(endpoint, json):
         endpoint = Constants.API_URL + endpoint
-        requests.post(endpoint, json=json)
+        requests.post(endpoint, json)

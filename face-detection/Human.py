@@ -71,6 +71,7 @@ class FacesUtil:
             roi, offset = ImageUtils.getSubImageRect(gray, face.position)
             eyes = Eyes.getFromImg(roi, eyeCascade, offset=offset)
             x = len(eyes)
+            print(x)
             if x >= Constants.EYES_MINIMUM or not Constants.FILTER_FACES:
                 found = True
                 face.scale(1/scale)

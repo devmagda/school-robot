@@ -13,7 +13,7 @@ SCREEN_HEIGHT = 540
 KM_GROUP_COUNT = 2
 KM_CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 5, 2.0)  # ( type, max_iter = 10 , epsilon = 1.0 )
 KM_FLAGS = cv2.KMEANS_RANDOM_CENTERS
-KM_TRIES = 5
+KM_TRIES = 10
 
 # Color values
 # First parameter is color range for detecting hsv color space
@@ -58,9 +58,9 @@ FACE_DETECTION_SCALE = 1
 SCALE_OBJECT_DETECTION = 1.0  # NEVER change this value
 
 # Info to print
-INFO_FPS = True
+INFO_FPS = False
 
-SHOW_HELPER = False
+SHOW_HELPER = True
 
 # Image Detection Utils
 MIRROR_HORIZONTAL = 1

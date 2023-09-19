@@ -39,11 +39,10 @@ class State:
         self.cloud = None
 
     def update(self, img) -> Any:
-        # from api.img.api import Client
         # Images to generate per frame to save in conversion time (e.g. Only run Once)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # Client.post_faces(img)
+
         # Updating values
         self.faces, self.found = \
             FacesUtil.get_valid_faces(gray, self.eye_cascade, self.face_cascade, scale=Constants.FACE_DETECTION_SCALE)
@@ -54,6 +53,7 @@ class State:
             img1 = ImageUtils.getSubImage(img, x, y, w, h, margin=Constants.FACE_COMPARISON_MARGIN)
             img1 = ImageUtils.scaleImage(img1, scale=Constants.FACE_COMPARISON_SCALE)
 
+            cv2.imshow('Web Capture img2', img1)
             for i, face in enumerate(self.faces):
                 x, y, w, h = face.to_x_y_width_height()
                 img2 = ImageUtils.getSubImage(img, x, y, w, h, margin=Constants.FACE_COMPARISON_MARGIN)
@@ -64,6 +64,7 @@ class State:
                     print(d)
                 except:
                     pass
+                cv2.imshow(f'Web Capture img2 {i}', img2)
                 print(verified, distance, threshold, end='')
         print()  # print after to still have a new line
 
