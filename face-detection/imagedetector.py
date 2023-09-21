@@ -1,3 +1,5 @@
+import numpy as np
+
 import Constants
 from ImageUtils import ImageUtils
 
@@ -42,15 +44,7 @@ class FaceClassifier(FeatureClassifier):
 
     def classify(self, gray):
         _, data = super().classify(gray)
-        verified_data = []
-        for data_point in data:
-            try:
-                FaceValidator().validate(gray, data_point)
-                verified_data.append(data_point)
-            except ValidatorError:
-                pass
-
-        return len(verified_data), verified_data
+        return len(data), data
 
 
 class ColorClassifier(ImageClassifier):
@@ -74,6 +68,7 @@ class ImageValidator:
         pass
 
     def validate(self, img, data):
+        print('Image validator: ', img, data)
         if img is None:
             raise ValidatorError(f'Image is None')
         if data is None:
@@ -107,22 +102,32 @@ class ImageDetector:
         self.validator = validator
 
     def detect(self, image):
-        data = self.classifier.classify(image)
-        self.validator.validate(image, data)
-        return data
+        return self.classifier.classify(image)
 
 
 class FaceDetector(ImageDetector):
     def __init__(self):
         super().__init__(FaceClassifier(), FaceValidator())
 
-    def detect(self, image):
-        return super().detect(image)
+    def detect(self, gray):
+        _, data = super().detect(gray)
+        data = self.filter_non_faces(gray, data)
+        return len(data), np.array(data)
+
+    def filter_non_faces(self, gray, data):
+        verified_data = []
+        for data_point in data:
+            try:
+                self.validator.validate(gray, data_point)
+                verified_data.append(data_point)
+            except ValidatorError:
+                pass
+        return verified_data
 
 
 class ColorDetector(ImageDetector):
-    def __init__(self):
-        super().__init__(ColorClassifier(), ColorValidator())
+    def __init__(self, color=Constants.COLOR_GREEN):
+        super().__init__(ColorClassifier(color=color), ColorValidator())
 
     def detect(self, image):
         return super().detect(image)

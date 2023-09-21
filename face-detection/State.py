@@ -6,6 +6,7 @@ import numpy as np
 import Constants
 from Human import FacesUtil
 from ImageUtils import ColorPicker, ImageUtils
+from imagedetector import ColorDetector, FaceDetector
 
 
 def getFaceDistance(a, b) -> float:
@@ -16,6 +17,9 @@ def getFaceDistance(a, b) -> float:
 class State:
 
     def __init__(self):
+
+        self.objects_by_color_detector = ColorDetector(Constants.COLOR_TRASH)
+        self.faces_detector = FaceDetector()
 
         # OpenCV objects
         self.sift = cv2.SIFT_create()
@@ -43,7 +47,7 @@ class State:
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # self.face_detector_test(gray, hsv)
+        self.face_detector_test(gray, hsv)
 
         # Updating values
         self.faces, self.found = \
