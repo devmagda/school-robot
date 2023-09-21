@@ -107,7 +107,7 @@ class ImageUtils:
             roi = img[y1:y2, x1:x2]
 
         if len(img.shape) == 3:
-            roi = img[y1:y2, x1:x2, 0:3]
+            roi = img[y1:y2, x1:x2]
         offset = [abs(x1), abs(y1)]
         return roi, offset
 

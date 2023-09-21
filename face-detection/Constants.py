@@ -1,13 +1,16 @@
 # Possible Screen Resolutions
 # 320x180
 # 960x540
+# 800x600
+
+
 import cv2
 
 # import ImageUtils
 
 # Screen Settings
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 540
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 576
 
 # K Means variables
 KM_GROUP_COUNT = 2
@@ -51,9 +54,9 @@ EYES_COLOR = COLOR_RED
 
 # Scaling
 FACE_COMPARISON_MARGIN = 50
-FACE_COMPARISON_SCALE = 1/4
+FACE_COMPARISON_SCALE = 1 / 4
 DO_FACE_COMPARISON = False
-FACE_DETECTION_SCALE = 1
+FACE_DETECTION_SCALE = 3 / 4
 
 SCALE_OBJECT_DETECTION = 1.0  # NEVER change this value
 
@@ -68,3 +71,6 @@ MIRROR_VERTICAL = 0
 MIRROR_BOTH = -1
 
 MIRROR_VIEW = False
+
+CLASSIFIER_FACE = 'haarcascade_frontalface_default.xml'
+CLASSIFIER_EYE = 'haarcascade_eye.xml'

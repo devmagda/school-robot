@@ -62,7 +62,6 @@ class PointCloud:
         self.color = color
         if len(self.points) > Constants.KM_GROUP_COUNT * 2:
             self.group(count)
-        # print("Done")
 
 
     def group(self, n):
@@ -106,6 +105,12 @@ class PointCloud:
         return rects
 
 
+    def get_as_xy_wh(self):
+        output = []
+        for c in self.centers:
+            x, y = int(c[0]), int(c[1])
+            output.append([x, y, 0, 0])
+        return output
 
     @staticmethod
     def fromImage(img, sift, color=None, count=5):

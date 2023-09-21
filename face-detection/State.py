@@ -37,9 +37,13 @@ class State:
         self.cloud = None
 
     def update(self, img) -> Any:
+        from imagedetector import ColorDetector
+        from imagedetector import FaceDetector
         # Images to generate per frame to save in conversion time (e.g. Only run Once)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # self.face_detector_test(gray, hsv)
 
         # Updating values
         self.faces, self.found = \
@@ -66,15 +70,30 @@ class State:
                     pass
                 cv2.imshow(f'Web Capture img2 {i}', img2)
                 print(verified, distance, threshold, end='')
-        print()  # print after to still have a new line
 
         if self.found:
             self.old = self.faces[0]
 
         # print("HSV: " + str(hsv))
-        # self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
-        # if self.cloud is not None:
-        #     self.trashes = self.cloud.getAsPositions(img=img)
+        self.cloud = self.cpGreen.calculate(hsv, self.sift, scale=Constants.SCALE_OBJECT_DETECTION)
+        if self.cloud is not None:
+            self.trashes = self.cloud.getAsPositions(img=img)
+
+    def face_detector_test(self, gray, hsv):
+        from imagedetector import ColorDetector
+        cd = ColorDetector()
+        from imagedetector import FaceDetector
+        fd = FaceDetector()
+        try:
+            print('\nFace  Detection: ', end='')
+            print(fd.detect(gray), end='')
+        except:
+            pass
+        try:
+            print('\nColor  Detection: ', end='')
+            print(cd.detect(hsv), end='')
+        except:
+            pass
 
     def visualize(self, img):
 
@@ -84,9 +103,10 @@ class State:
 
         # for eye in self.eyes:
         #   eye.draw(img, True, color=Constants.COLOR_PINK)
+        # print(self.trashes)
 
-        # for trash in self.trashes:
-        #     trash.draw(img, True)
+        for trash in self.trashes:
+            trash.draw(img, True)
 
         # if self.cloud.keypoints == None:
         #     for point in self.cloud.points:

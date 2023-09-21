@@ -19,6 +19,7 @@ global fps_tracker
 
 blue = [255, 0, 0]
 
+
 def initCaptureDevice() -> cv2.VideoCapture:
     # To capture video from webcam.
     global cap
@@ -29,9 +30,11 @@ def initCaptureDevice() -> cv2.VideoCapture:
     cv2.imshow('Web Capture', image)
     return cap
 
+
 def aid(img):
     p = (1, 1)
     Rectangle.drawLine(img, p, p, Constants.COLOR_RED, 10)
+
 
 def captureLoop():
     global image, cap, state, last
@@ -46,12 +49,13 @@ def printFps():
     diff_mil = int(diff_sec * 1000)
     last = time.time_ns()
     fps = int(1 / diff_sec)
-    print(f'{fps} Fps | {diff_mil} ms -> ', end='')
+    print(f'{fps} Fps | {diff_mil} ms -> ')
 
 
 def viewLoop():
     global image
     global active
+
     image = ImageUtils.ImageUtils.scaleImage(image, 1.25)
     # aid(image)
     if Constants.MIRROR_VIEW:
