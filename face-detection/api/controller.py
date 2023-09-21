@@ -69,3 +69,39 @@ class Rotator(Pin):
 
     def calculate_duty_cycle(self):
         return 2.5 + (self.current_angle / 18)
+
+    def left(self, angle):
+        self.add_rotation(angle)
+
+    def right(self, angle):
+        self.add_rotation(-angle)
+
+    def up(self, angle):
+        self.add_rotation(angle)
+
+    def down(self, angle):
+        self.add_rotation(angle)
+
+
+class Controller:
+    def __init__(self):
+        Pins.init()
+        self.y_rotator = Rotator(40)
+        self.z_rotator = Rotator(38)
+
+    def up(self, angle):
+        self.y_rotator.add_rotation(angle)
+
+    def down(self, angle):
+        self.y_rotator.add_rotation(-angle)
+
+    def left(self, angle):
+        self.z_rotator.add_rotation(angle)
+
+    def right(self, angle):
+        self.z_rotator.add_rotation(-angle)
+
+    def __del__(self):
+        self.z_rotator.__del__()
+        self.y_rotator.__del__()
+        Pins.close()
