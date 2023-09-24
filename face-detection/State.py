@@ -47,7 +47,7 @@ class State:
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        self.face_detector_test(gray, hsv)
+        # self.face_detector_test(gray, hsv)
 
         # Updating values
         self.faces, self.found = \
@@ -89,13 +89,13 @@ class State:
         from imagedetector import FaceDetector
         fd = FaceDetector()
         try:
-            print('\nFace  Detection: ', end='')
+            # print('\nFace  Detection: ', end='')
             print(fd.detect(gray), end='')
         except:
             pass
         try:
             print('\nColor  Detection: ', end='')
-            print(cd.detect(hsv), end='')
+            # print(cd.detect(hsv), end='')
         except:
             pass
 
