@@ -4,22 +4,36 @@ import time
 import cv2
 
 import Constants
-from images import ImageUtils
 from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice, Rectangle
+from images import ImageUtils
 
 
 class Model:
-    def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH):
-        self.capture_device = CaptureDevice()
+    def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH, capture_device=None):
+        self.capture_device = capture_device
         self.face_detector = FaceClassifier()
         self.color_groups_detector = ColorGroupClassifier(count=count, color=color)
         self.current_image = None
         self.result_faces = []
         self.result_color_groups = []
 
-    def calculate(self):
-        self.current_image = self.capture_device.get_image()
+    def calculate(self, image=None):
+        if image is not None:
+            self.current_image = image
+            found = True
+        else:
+            found, self.current_image = self.capture_device.get_image()
+        if found:
+            self.face_detector.calculate(self.current_image)
+            self.color_groups_detector.calculate(self.current_image)
 
+            self.result_faces = self.face_detector.result
+            self.result_color_groups = self.color_groups_detector.result
+        return found, self
+
+
+    def calculate_threaded(self):
+        found, self.current_image = self.capture_device.get_image()
 
         # Create thread objects for both functions
         faces_thread = threading.Thread(target=self.face_detector.calculate, args=(self.current_image,))
@@ -35,9 +49,23 @@ class Model:
 
         self.result_faces = self.face_detector.result
         self.result_color_groups = self.color_groups_detector.result
+        return self
 
     def __str__(self):
         return f'Faces: {len(self.result_faces)} ColorGroups: {len(self.result_color_groups)}'
+
+    def get_face_images(self):
+        faces = []
+        for x, y, width, height in self.result_faces:
+            faces.append(ImageUtils.getSubImage(self.current_image, x, y, width, height))
+        return faces
+
+    def get_color_key_points_image(self):
+        image_copy = self.current_image.copy()
+        gray = cv2.cvtColor(image_copy, cv2.COLOR_BGR2GRAY)
+        colored = cv2.cvtColor(gray,cv2.COLOR_GRAY2RGB)
+        gray_with_key_points = ImageUtils.draw_key_points(colored, self.color_groups_detector.key_points)
+        return gray_with_key_points
 
 
 class View:
@@ -62,7 +90,7 @@ class Controller:
     timestamp_last = 0
 
     def __init__(self):
-        self.model = Model()
+        self.model = Model(capture_device=CaptureDevice())
         self.view = View()
 
     def run(self):
@@ -71,7 +99,7 @@ class Controller:
             k = cv2.waitKey(1) & 0xff
             if k == 27:
                 active = False
-            self.model.calculate()
+            self.model.calculate_threaded()
             self.view.view(self.model)
             self.print_fps()
             self.show_distances()

@@ -27,6 +27,12 @@ class ImageUtils:
         return cv2.flip(img, mode)
 
     @staticmethod
+    def draw_key_points(image, key_points):
+        image_copy = image.copy()
+        cv2.drawKeypoints(image_copy, key_points, image_copy)
+        return image_copy
+
+    @staticmethod
     def scaleImage(image, scale=1.0, image_size=None):
         image_copied = image.copy()
 

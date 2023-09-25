@@ -112,5 +112,3 @@ class Controller:
         self.z_rotator.__del__()
         self.y_rotator.__del__()
         Pins.close()
-
-# scp file.txt remote_username@10.10.0.2:/remote/directory

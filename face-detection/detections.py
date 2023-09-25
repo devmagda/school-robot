@@ -8,16 +8,15 @@ from images import ImageUtils, Colors
 
 class CaptureDevice:
     def get_image(self):
-        _, image = self.cap.read()
-        return image
+        return self.cap.read()
 
     def __init__(self, width=Constants.SCREEN_WIDTH, height=Constants.SCREEN_HEIGHT):
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         _, self.image = self.cap.read()
-        # self.width, self.height, _ = self.image.shape
-        # self.center = Rectangle(width / 2, height / 2, 0, 0)
+        self.width, self.height, _ = self.image.shape
+        self.center = Rectangle(width / 2, height / 2, 0, 0)
 
 
 class Classifier:
@@ -116,6 +115,7 @@ class ColorGroupClassifier(Classifier):
         self.color = color
         self.count = count
         self.sift = cv2.SIFT_create()
+        self.key_points = []
 
     def classify(self, image, scale=1 / 5):
         inverted_scale = 1 / scale
@@ -123,11 +123,18 @@ class ColorGroupClassifier(Classifier):
         mask = cv2.inRange(hsv, self.lower, self.upper)
         scaled_mask = ImageUtils.scaleImage(mask, scale)
         scaled_mask = cv2.fastNlMeansDenoising(scaled_mask, None, h=20, templateWindowSize=3, searchWindowSize=5)
-        key_points = self.sift.detect(scaled_mask, None)
+        scaled_key_points = []
+        for key_point in self.sift.detect(scaled_mask, None):
+            x, y = key_point.pt
+            x = x * inverted_scale
+            y = y * inverted_scale
+            key_point.pt = (x, y)
+            scaled_key_points.append(key_point)
+        self.key_points = scaled_key_points
 
         # Creating numpy array for kmeans calculation
-        key_points_as_np_array = np.empty((len(key_points), 2), np.float32)  # creates empty 2d numpy array
-        for i, key_point in enumerate(key_points):
+        key_points_as_np_array = np.empty((len(self.key_points), 2), np.float32)  # creates empty 2d numpy array
+        for i, key_point in enumerate(self.key_points):
             x = np.float32(key_point.pt[0])
             y = np.float32(key_point.pt[1])
             key_points_as_np_array[i] = (x, y)
