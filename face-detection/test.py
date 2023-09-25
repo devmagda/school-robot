@@ -3,6 +3,7 @@ import cv2
 from flask import Flask, render_template, Response
 
 from detections import CaptureDevice
+from images import ImageUtils
 from mcv import Model
 
 app = Flask(__name__)
@@ -22,7 +23,8 @@ def gen_frames2():
         else:
             found, _ = model.calculate(frame)
             frame = model.get_color_key_points_image()
-            ret, buffer = cv2.imencode('.jpg', frame)
+            frame_mirrored = ImageUtils.mirror(frame, 1)
+            ret, buffer = cv2.imencode('.jpg', frame_mirrored)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
