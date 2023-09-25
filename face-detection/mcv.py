@@ -4,7 +4,7 @@ import time
 import cv2
 
 import Constants
-from ImageUtils import ImageUtils
+from images import ImageUtils
 from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice, Rectangle
 
 

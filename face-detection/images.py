@@ -1,8 +1,5 @@
-from typing import Any
-
 import cv2
 import numpy as np
-from PIL import Image
 
 import Constants
 
@@ -10,17 +7,17 @@ import Constants
 class Colors:
 
     @staticmethod
-    def getColorLimits(color):
-        range, bgr, rgb = color
+    def get_color_limits(color):
+        hsv_color_range, bgr, rgb = color
         c = np.uint8([[bgr]])
         hsv = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
-        lowerlimit = hsv[0][0][0] - range, Constants.HSV_LIMIT_LOWER, Constants.HSV_LIMIT_LOWER
-        upperlimit = hsv[0][0][0] + range, Constants.HSV_LIMIT_UPPER, Constants.HSV_LIMIT_UPPER
+        lower_limit = hsv[0][0][0] - hsv_color_range, Constants.HSV_LIMIT_LOWER, Constants.HSV_LIMIT_LOWER
+        upper_limit = hsv[0][0][0] + hsv_color_range, Constants.HSV_LIMIT_UPPER, Constants.HSV_LIMIT_UPPER
 
-        lowerlimit = np.array(lowerlimit, dtype=np.uint8)
-        upperlimit = np.array(upperlimit, dtype=np.uint8)
+        lower_limit = np.array(lower_limit, dtype=np.uint8)
+        upper_limit = np.array(upper_limit, dtype=np.uint8)
 
-        return lowerlimit, upperlimit
+        return lower_limit, upper_limit
 
 
 class ImageUtils:
@@ -74,5 +71,3 @@ class ImageUtils:
 
             filename = f'debug/{filename}_{index}.jpg'
             cv2.imwrite(filename, image)
-
-

@@ -3,7 +3,7 @@ import numpy
 import numpy as np
 
 import Constants
-from ImageUtils import ImageUtils, Colors
+from images import ImageUtils, Colors
 
 
 class CaptureDevice:
@@ -16,8 +16,8 @@ class CaptureDevice:
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         _, self.image = self.cap.read()
-        self.width, self.height, _ = self.image.shape
-        self.center = Rectangle(width / 2, height / 2, 0, 0)
+        # self.width, self.height, _ = self.image.shape
+        # self.center = Rectangle(width / 2, height / 2, 0, 0)
 
 
 class Classifier:
@@ -64,7 +64,6 @@ class Rectangle:
         a = numpy.array(rectangle_1.center)
         b = numpy.array(rectangle_2.center)
         return numpy.linalg.norm(a - b)
-        # return sqrt((rectangle_1.x - rectangle_2.x) ^ 2 + (rectangle_1.y - rectangle_2.y) ^ 2)
 
 
 class CascadeClassifier(Classifier):
@@ -113,7 +112,7 @@ class FaceClassifier(CascadeClassifier):
 
 class ColorGroupClassifier(Classifier):
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH):
-        self.lower, self.upper = Colors.getColorLimits(color)
+        self.lower, self.upper = Colors.get_color_limits(color)
         self.color = color
         self.count = count
         self.sift = cv2.SIFT_create()
