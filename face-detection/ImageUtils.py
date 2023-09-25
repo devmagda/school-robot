@@ -20,7 +20,6 @@ class Colors:
         lowerlimit = np.array(lowerlimit, dtype=np.uint8)
         upperlimit = np.array(upperlimit, dtype=np.uint8)
 
-        print(lowerlimit, upperlimit)
         return lowerlimit, upperlimit
 
 
@@ -31,14 +30,16 @@ class ImageUtils:
         return cv2.flip(img, mode)
 
     @staticmethod
-    def scaleImage(image, scale=1.0):
+    def scaleImage(image, scale=1.0, image_size=None):
         image_copied = image.copy()
-        width = int(image_copied.shape[1] * scale)
-        height = int(image_copied.shape[0] * scale)
-        dim = (width, height)
+
+        if image_size is None:
+            width = int(image_copied.shape[1] * scale)
+            height = int(image_copied.shape[0] * scale)
+            image_size = (width, height)
 
         # resize image
-        resized = cv2.resize(image_copied, dim, interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(image_copied, image_size, interpolation=cv2.INTER_AREA)
         return resized
 
     @staticmethod
@@ -107,16 +108,16 @@ class ImageUtils:
 
     @staticmethod
     def getMaskByLimits(hsv, lower_limit, upper_limit):
-        # print("getMaskByLimits-----------------------------------------")
-        # print(upper_limit)
-        # print(lower_limit)
-        # print(hsv)
-        mask = None
         try:
             mask = cv2.inRange(hsv, lower_limit, upper_limit)
         except:
             return None
         return mask
+
+    @staticmethod
+    def apply_mask(image, mask):
+        image_copy = image.copy()
+        cv2.bitwise_and(image_copy, image_copy, mask=mask)
 
     class IO:
         FILE_INDEX = 0
@@ -135,3 +136,5 @@ class ImageUtils:
 
             filename = f'debug/{filename}_{index}.jpg'
             cv2.imwrite(filename, image)
+
+

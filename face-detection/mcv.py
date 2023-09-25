@@ -20,7 +20,6 @@ class Model:
     def calculate(self):
         self.current_image = self.capture_device.get_image()
 
-        print(self.current_image.shape)
 
         # Create thread objects for both functions
         faces_thread = threading.Thread(target=self.face_detector.calculate, args=(self.current_image,))
@@ -36,7 +35,6 @@ class Model:
 
         self.result_faces = self.face_detector.result
         self.result_color_groups = self.color_groups_detector.result
-        # print('Done')
 
     def __str__(self):
         return f'Faces: {len(self.result_faces)} ColorGroups: {len(self.result_color_groups)}'
@@ -52,6 +50,8 @@ class View:
 
         for color_group in model.result_color_groups:
             color_group.draw(model.current_image)
+
+        model.capture_device.center.draw(model.current_image)
 
         flipped = ImageUtils.mirror(model.current_image, 1)
 
@@ -73,15 +73,15 @@ class Controller:
                 active = False
             self.model.calculate()
             self.view.view(self.model)
-            self.printFps()
-            print(self.model)
+            self.print_fps()
             self.show_distances()
 
     def show_distances(self):
         for face in self.model.result_faces:
-            print(Rectangle.distance(face, self.model.capture_device.center))
+            print('Distance: ', Rectangle.distance(face, self.model.capture_device.center))
             pass
-    def printFps(self):
+
+    def print_fps(self):
         diff_sec = (time.time_ns() - Controller.timestamp_last) / 1000000000
         diff_mil = int(diff_sec * 1000)
         Controller.timestamp_last = time.time_ns()

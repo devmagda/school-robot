@@ -1,5 +1,3 @@
-from cmath import sqrt
-
 import cv2
 import numpy
 import numpy as np
@@ -17,8 +15,8 @@ class CaptureDevice:
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        _, image = self.cap.read()
-        self.width, self.height, _ = image.shape
+        _, self.image = self.cap.read()
+        self.width, self.height, _ = self.image.shape
         self.center = Rectangle(width / 2, height / 2, 0, 0)
 
 
@@ -58,9 +56,8 @@ class Rectangle:
     def draw(self, image):
         cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
                       color=self.color, thickness=2)
-
-        if self.width == 0 and self.height == 0:
-            cv2.circle(image, (self.x, self.y), 25, color=self.color, thickness=2)
+        center_x, center_y = self.center
+        cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
 
     @staticmethod
     def distance(rectangle_1, rectangle_2):
@@ -121,7 +118,7 @@ class ColorGroupClassifier(Classifier):
         self.count = count
         self.sift = cv2.SIFT_create()
 
-    def classify(self, image, scale=1/5):
+    def classify(self, image, scale=1 / 5):
         inverted_scale = 1 / scale
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.lower, self.upper)
