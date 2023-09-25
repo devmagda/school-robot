@@ -22,15 +22,14 @@ KM_TRIES = 1
 # First parameter is color range for detecting hsv color space
 # Second parameter is bgr color space
 # Third parameter is rgb color space
-COLOR_BLUE = (10, [0, 0, 255], [255, 0, 0])
+COLOR_BLUE = (30, [255, 0, 0], [0, 0, 255])
 COLOR_PINK = (10, [255, 0, 255], [255, 0, 255])
-COLOR_RED = (10, [255, 0, 0], [0, 0, 255])
+COLOR_RED = (20, [0, 0, 255], [255, 0, 0])  # Somehow doesn't work so good
 COLOR_YELLOW = (10, [0, 255, 255], [255, 255, 0])
 COLOR_GREEN = (20, [0, 255, 0], [0, 255, 0])
 COLOR_TURQUOISE = (10, [255, 255, 0], [0, 255, 255])
 COLOR_WHITE = (360, [0, 0, 0], [0, 0, 0])
 COLOR_BLACK = (360, [255, 255, 255], [255, 255, 255])
-
 
 COLOR_TRASH = COLOR_GREEN
 
@@ -42,7 +41,6 @@ COLOR_TRASH = COLOR_GREEN
 # HSV Detection Values
 HSV_LIMIT_UPPER = 255
 HSV_LIMIT_LOWER = 75
-HSV_RANGE = 10
 
 # Shapes Text values
 TEXT_FONT = cv2.FONT_HERSHEY_SIMPLEX
@@ -64,7 +62,7 @@ FACE_DETECTION_SCALE = 3 / 4
 SCALE_OBJECT_DETECTION = 1.0  # NEVER change this value
 
 # Info to print
-INFO_FPS = True
+INFO_FPS = False
 
 SHOW_HELPER = False
 

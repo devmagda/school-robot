@@ -30,11 +30,12 @@ class ClassifierResult:
 
 
 class Rectangle:
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, bgr=[255, 255, 255]):
         self.x = int(x)
         self.y = int(y)
         self.width = int(width)
         self.height = int(height)
+        self.color = bgr
 
     def __str__(self):
         return f'Rectangle(x={self.x}, y={self.y}, width={self.width}, height={self.height})'
@@ -45,6 +46,13 @@ class Rectangle:
         self.width = int(self.width * scale)
         self.height = int(self.height * scale)
         return self
+
+    def draw(self, image):
+        cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
+                      color=self.color, thickness=2)
+
+        if self.width == 0 and self.height == 0:
+            cv2.circle(image, (self.x, self.y), 25, color=self.color, thickness=2)
 
 
 class CascadeClassifier(Classifier):
@@ -84,15 +92,17 @@ class FaceClassifier(CascadeClassifier):
             # ImageUtils.IO.saveJpg('face', cut_face)
             result_eyes = self.eye_classifier.classify(cut_face)
             if len(result_eyes) >= Constants.EYES_MINIMUM:
-                result.append(Rectangle(x, y, w, h).scale(inverted_scale))
+                result.append(Rectangle(x, y, w, h, bgr=[255, 0, 0]).scale(inverted_scale))
         return result
 
     def calculate(self, gray):
         self.result = self.classify(gray)
 
+
 class ColorGroupClassifier(Classifier):
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH):
         self.lower, self.upper = Colors.getColorLimits(color)
+        self.color = color
         self.count = count
         self.sift = cv2.SIFT_create()
 
@@ -116,7 +126,7 @@ class ColorGroupClassifier(Classifier):
         for center in centers:
             if len(center) == 2:
                 x, y = center
-                result.append(Rectangle(x, y, 0, 0).scale(inverted_scale))
+                result.append(Rectangle(x, y, 0, 0, bgr=self.color[2]).scale(inverted_scale))
 
         return result
 

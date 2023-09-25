@@ -11,7 +11,7 @@ class Colors:
 
     @staticmethod
     def getColorLimits(color):
-        range, bgr, _ = color
+        range, bgr, rgb = color
         c = np.uint8([[bgr]])
         hsv = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
         lowerlimit = hsv[0][0][0] - range, Constants.HSV_LIMIT_LOWER, Constants.HSV_LIMIT_LOWER
@@ -20,6 +20,7 @@ class Colors:
         lowerlimit = np.array(lowerlimit, dtype=np.uint8)
         upperlimit = np.array(upperlimit, dtype=np.uint8)
 
+        print(lowerlimit, upperlimit)
         return lowerlimit, upperlimit
 
 

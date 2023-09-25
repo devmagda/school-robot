@@ -19,7 +19,6 @@ class Model:
     def calculate(self):
         self.current_image = self.capture_device.get_image()
 
-
         # Create thread objects for both functions
         faces_thread = threading.Thread(target=self.face_detector.calculate, args=(self.current_image,))
         colors_thread = threading.Thread(target=self.color_groups_detector.calculate, args=(self.current_image,))
@@ -45,11 +44,18 @@ class View:
         pass
 
     def view(self, model: Model):
-        pass
+        for face in model.result_faces:
+            face.draw(model.current_image)
+
+        for color_group in model.result_color_groups:
+            color_group.draw(model.current_image)
+
+        cv2.imshow('debug', model.current_image)
 
 
 class Controller:
     timestamp_last = 0
+
     def __init__(self):
         self.model = Model()
         self.view = View()
@@ -64,7 +70,6 @@ class Controller:
             self.view.view(self.model)
             self.printFps()
             print(self.model)
-
 
     def printFps(self):
         diff_sec = (time.time_ns() - Controller.timestamp_last) / 1000000000
