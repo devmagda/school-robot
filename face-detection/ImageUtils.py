@@ -43,53 +43,6 @@ class ImageUtils:
         return resized
 
     @staticmethod
-    def helperShow(img, title='Default'):
-        if Constants.SHOW_HELPER:
-            try:
-                cv2.imshow(title, img)
-            except FileNotFoundError:
-                pass
-
-    @staticmethod
-    def getKeyPointsByColor(img, color, sift) -> Any:
-        mask = ImageUtils.getMaskByColor(img, color)
-        return ImageUtils.getKeyPointsByMask(mask, sift)
-
-    @staticmethod
-    def getKeyPoints(img, sift, color=None):
-        if color is None:
-            return ImageUtils.getKeyPointsByMask(img, sift)
-        else:
-            return ImageUtils.getKeyPointsByColor(img, color)
-
-    @staticmethod
-    def getKeyPointsByMask(mask, sift):
-        kp = sift.detect(mask, None)
-        return kp
-
-    @staticmethod
-    def getBoxPointsByMask(mask):
-        _mask = Image.fromarray(mask)
-        bbox = _mask.getbbox()  # Creates bounding box
-        return bbox
-
-    @staticmethod
-    def getSubImageRect(img, position):
-        a, b, c, d = position
-        x1 = a[0]
-        y1 = a[1]
-        x2 = d[0]
-        y2 = d[1]
-        roi = None
-        if len(img.shape) == 2:
-            roi = img[y1:y2, x1:x2]
-
-        if len(img.shape) == 3:
-            roi = img[y1:y2, x1:x2]
-        offset = [abs(x1), abs(y1)]
-        return roi, offset
-
-    @staticmethod
     def getSubImage(image, x, y, width, height):
         roi = image[y:y + height, x:x + width]
         if 0 in roi.shape:
@@ -98,21 +51,6 @@ class ImageUtils:
                 str(roi.shape) + ' are not in shape!'
             )
         return roi
-
-    @staticmethod
-    def getMaskByColor(img, color):
-        lower_limit, upper_limit = Colors.getColorLimits(color=color)
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, lower_limit, upper_limit)
-        return mask
-
-    @staticmethod
-    def getMaskByLimits(hsv, lower_limit, upper_limit):
-        try:
-            mask = cv2.inRange(hsv, lower_limit, upper_limit)
-        except:
-            return None
-        return mask
 
     @staticmethod
     def apply_mask(image, mask):
