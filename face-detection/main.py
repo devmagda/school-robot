@@ -9,6 +9,7 @@ import Constants
 import ImageUtils
 from Shapes import Rectangle
 from State import State
+from detections import FaceClassifier, ColorGroupClassifier
 
 global active
 global cap
@@ -39,6 +40,13 @@ def aid(img):
 def captureLoop():
     global image, cap, state, last
     _, image = cap.read()
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    fd = FaceClassifier()
+    cd = ColorGroupClassifier()
+
+    print('Faces: ', fd.classify(gray))
+    print('Color Groups: ', cd.classify(hsv))
     state.update(image)
     state.visualize(image)
 

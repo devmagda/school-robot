@@ -1,36 +1,26 @@
-from fastapi import FastAPI
+from flask import Flask, request
 
-from api.controller import Rotator, Led, Pins
+from pi_controller import Controller
 
-app = FastAPI()
+app = Flask(__name__)
 
-Pins.init()
-
-z_rotator = Rotator(pin=15)
-y_rotator = Rotator(pin=16)
-laser = Led(pin=25)
+conn = Controller()
 
 
-# /rotation/set/?z=5&y=7
-@app.get("/rotation/set/")
-def set_rotation(z: int, y: int):
-    try:
-        z_rotator.set_rotation(z)
-        y_rotator.set_rotation(y)
-        return {"result": True}
-    except ValueError:
-        return {"result": False}
+@app.route('/rotation/add', methods=['GET'])
+def add_numbers():
+    # Get the two parameters from the URL query string
+    y = request.args.get('y')
+    z = request.args.get('z')
+    conn.up(y)
+    conn.right(z)
 
 
-# /rotation/add/?z=5&y=7
-@app.get("/rotation/add/")
-def add_rotation(z: int, y: int):
-    try:
-        z_rotator.set_rotation(z)
-        y_rotator.set_rotation(y)
-        return {"result": True}
-    except ValueError:
-        return {"result": False}
+# home route that returns below text
+# when root url is accessed
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
 
 
 class Client:
@@ -51,3 +41,7 @@ class Client:
         if response.status_code != 200:
             raise ValueError('An Error occurred')
 
+
+# Run the Flask application if this script is executed
+if __name__ == '__main__':
+    app.run(host='169.254.160.151', debug=True, port=8080)

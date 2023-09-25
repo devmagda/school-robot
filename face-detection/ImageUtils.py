@@ -1,9 +1,8 @@
 from typing import Any
 
-from PIL import Image
-
 import cv2
 import numpy as np
+from PIL import Image
 
 import Constants
 import PointClouds
@@ -18,7 +17,9 @@ class ColorPicker:
         self.count = count
 
     def calculate(self, hsv, sift, scale=1.0):
-        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale, color=self.color)
+        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale,
+                                                 color=self.color)
+
 
 class Colors:
 
@@ -112,21 +113,7 @@ class ImageUtils:
         return roi, offset
 
     @staticmethod
-    def getSubImage(image, x, y, width, height, margin=0):
-        double = margin * 2
-
-        x = x - margin
-        if x < 0:
-            x = 0
-
-        y = y - margin
-        if y < 0:
-            y = 0
-
-        width = width + double
-        height = height + double
-        if image is None:
-            raise ValueError('Image is missing')
+    def getSubImage(image, x, y, width, height):
         roi = image[y:y + height, x:x + width]
         if 0 in roi.shape:
             raise IndexError(
@@ -155,7 +142,6 @@ class ImageUtils:
             return None
         return mask
 
-
     @staticmethod
     def getQRLocation(qcd, img) -> tuple[bool, Shapes.Rectangle, Any]:
 
@@ -171,3 +157,21 @@ class ImageUtils:
             return True, Shapes.Rectangle(b.astype(int), a.astype(int), c.astype(int), d.astype(int)), gray
 
         return False, None, gray
+
+    class IO:
+        FILE_INDEX = 0
+
+        @staticmethod
+        def loadJpg(filename):
+            image = cv2.imread(filename)
+            if image.size == 0:
+                raise ImportError("File <" + str(filename) + "> could not be loaded")
+            return image
+
+        @staticmethod
+        def saveJpg(filename, image):
+            index = ImageUtils.IO.FILE_INDEX
+            ImageUtils.IO.FILE_INDEX = ImageUtils.IO.FILE_INDEX + 1
+
+            filename = f'debug/{filename}_{index}.jpg'
+            cv2.imwrite(filename, image)

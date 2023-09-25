@@ -1,5 +1,9 @@
 import RPi.GPIO as GPIO
 
+# Pin configuration
+# 40 -> Y
+# 38 -> Z
+
 
 class Pins:
     ACTIVE = False
@@ -87,21 +91,26 @@ class Controller:
     def __init__(self):
         Pins.init()
         self.y_rotator = Rotator(40)
+        self.y_rotator.set_rotation(90)
         self.z_rotator = Rotator(38)
+        self.z_rotator.set_rotation(90)
 
     def up(self, angle):
-        self.y_rotator.add_rotation(angle)
-
-    def down(self, angle):
         self.y_rotator.add_rotation(-angle)
 
+    def down(self, angle):
+        self.y_rotator.add_rotation(angle)
+
     def left(self, angle):
-        self.z_rotator.add_rotation(angle)
+        self.z_rotator.add_rotation(-angle)
 
     def right(self, angle):
-        self.z_rotator.add_rotation(-angle)
+        self.z_rotator.add_rotation(angle)
 
     def __del__(self):
         self.z_rotator.__del__()
         self.y_rotator.__del__()
         Pins.close()
+
+
+# scp file.txt remote_username@10.10.0.2:/remote/directory
