@@ -1,4 +1,7 @@
+from cmath import sqrt
+
 import cv2
+import numpy
 import numpy as np
 
 import Constants
@@ -14,6 +17,9 @@ class CaptureDevice:
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        _, image = self.cap.read()
+        self.width, self.height, _ = image.shape
+        self.center = Rectangle(width / 2, height / 2, 0, 0)
 
 
 class Classifier:
@@ -35,6 +41,7 @@ class Rectangle:
         self.y = int(y)
         self.width = int(width)
         self.height = int(height)
+        self.center = (self.x + (self.width / 2), self.y + (self.height / 2))
         self.color = bgr
 
     def __str__(self):
@@ -45,6 +52,7 @@ class Rectangle:
         self.y = int(self.y * scale)
         self.width = int(self.width * scale)
         self.height = int(self.height * scale)
+        self.center = (self.x + (self.width / 2), self.y + (self.height / 2))
         return self
 
     def draw(self, image):
@@ -53,6 +61,13 @@ class Rectangle:
 
         if self.width == 0 and self.height == 0:
             cv2.circle(image, (self.x, self.y), 25, color=self.color, thickness=2)
+
+    @staticmethod
+    def distance(rectangle_1, rectangle_2):
+        a = numpy.array(rectangle_1.center)
+        b = numpy.array(rectangle_2.center)
+        return numpy.linalg.norm(a - b)
+        # return sqrt((rectangle_1.x - rectangle_2.x) ^ 2 + (rectangle_1.y - rectangle_2.y) ^ 2)
 
 
 class CascadeClassifier(Classifier):
@@ -106,7 +121,7 @@ class ColorGroupClassifier(Classifier):
         self.count = count
         self.sift = cv2.SIFT_create()
 
-    def classify(self, image, scale=0.25):
+    def classify(self, image, scale=1/5):
         inverted_scale = 1 / scale
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.lower, self.upper)

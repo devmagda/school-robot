@@ -4,7 +4,8 @@ import time
 import cv2
 
 import Constants
-from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice
+from ImageUtils import ImageUtils
+from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice, Rectangle
 
 
 class Model:
@@ -18,6 +19,8 @@ class Model:
 
     def calculate(self):
         self.current_image = self.capture_device.get_image()
+
+        print(self.current_image.shape)
 
         # Create thread objects for both functions
         faces_thread = threading.Thread(target=self.face_detector.calculate, args=(self.current_image,))
@@ -50,7 +53,9 @@ class View:
         for color_group in model.result_color_groups:
             color_group.draw(model.current_image)
 
-        cv2.imshow('debug', model.current_image)
+        flipped = ImageUtils.mirror(model.current_image, 1)
+
+        cv2.imshow('debug', flipped)
 
 
 class Controller:
@@ -70,7 +75,12 @@ class Controller:
             self.view.view(self.model)
             self.printFps()
             print(self.model)
+            self.show_distances()
 
+    def show_distances(self):
+        for face in self.model.result_faces:
+            print(Rectangle.distance(face, self.model.capture_device.center))
+            pass
     def printFps(self):
         diff_sec = (time.time_ns() - Controller.timestamp_last) / 1000000000
         diff_mil = int(diff_sec * 1000)
