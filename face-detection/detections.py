@@ -6,21 +6,19 @@ from ImageUtils import ImageUtils, Colors
 
 
 class CaptureDevice:
+    def get_image(self):
+        _, image = self.cap.read()
+        return image
+
     def __init__(self, width=Constants.SCREEN_WIDTH, height=Constants.SCREEN_HEIGHT):
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        image = self.get_image()
-
-    def get_image(self):
-        _, image = self.cap.read()
-        cv2.imshow('debug_vaiew', image)
-        return image
 
 
 class Classifier:
     def __init__(self):
-        pass
+        self.result = []
 
     def classify(self, image):
         pass
@@ -42,12 +40,11 @@ class Rectangle:
         return f'Rectangle(x={self.x}, y={self.y}, width={self.width}, height={self.height})'
 
     def scale(self, scale=1.0):
-        self.x = int(self.x*scale)
-        self.y = int(self.y*scale)
-        self.width = int(self.width*scale)
-        self.height = int(self.height*scale)
+        self.x = int(self.x * scale)
+        self.y = int(self.y * scale)
+        self.width = int(self.width * scale)
+        self.height = int(self.height * scale)
         return self
-
 
 
 class CascadeClassifier(Classifier):
@@ -59,6 +56,15 @@ class CascadeClassifier(Classifier):
             return self.cascade.detectMultiScale(gray, 1.1, 4)
         except:
             return []
+
+
+class EyeClassifier(CascadeClassifier):
+    def __init__(self):
+        super().__init__('haarcascade_eye.xml')
+
+    def classify(self, gray, scale=1.0):
+        gray_scaled = ImageUtils.scaleImage(gray, scale)
+        return super().classify(gray_scaled)
 
 
 class FaceClassifier(CascadeClassifier):
@@ -81,15 +87,8 @@ class FaceClassifier(CascadeClassifier):
                 result.append(Rectangle(x, y, w, h).scale(inverted_scale))
         return result
 
-
-class EyeClassifier(CascadeClassifier):
-    def __init__(self):
-        super().__init__('haarcascade_eye.xml')
-
-    def classify(self, gray, scale=1.0):
-        gray_scaled = ImageUtils.scaleImage(gray, scale)
-        return super().classify(gray_scaled)
-
+    def calculate(self, gray):
+        self.result = self.classify(gray)
 
 class ColorGroupClassifier(Classifier):
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH):
@@ -97,15 +96,13 @@ class ColorGroupClassifier(Classifier):
         self.count = count
         self.sift = cv2.SIFT_create()
 
-    def classify(self, image, scale=0.5):
+    def classify(self, image, scale=0.25):
         inverted_scale = 1 / scale
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.lower, self.upper)
-        mask = cv2.fastNlMeansDenoising(mask, None, h=20, templateWindowSize=3, searchWindowSize=5)
-        key_points = self.sift.detect(mask, None)
-
-        if key_points is not None:
-            ColorGroupClassifier.Helper.draw_points_to_image_and_save(key_points, image)
+        scaled_mask = ImageUtils.scaleImage(mask, scale)
+        scaled_mask = cv2.fastNlMeansDenoising(scaled_mask, None, h=20, templateWindowSize=3, searchWindowSize=5)
+        key_points = self.sift.detect(scaled_mask, None)
 
         # Creating numpy array for kmeans calculation
         key_points_as_np_array = np.empty((len(key_points), 2), np.float32)  # creates empty 2d numpy array
@@ -122,6 +119,9 @@ class ColorGroupClassifier(Classifier):
                 result.append(Rectangle(x, y, 0, 0).scale(inverted_scale))
 
         return result
+
+    def calculate(self, image):
+        self.result = self.classify(image)
 
     class Helper:
         @staticmethod

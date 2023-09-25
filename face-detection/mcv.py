@@ -1,3 +1,4 @@
+import threading
 import time
 
 import cv2
@@ -17,12 +18,26 @@ class Model:
 
     def calculate(self):
         self.current_image = self.capture_device.get_image()
-        self.result_faces = self.face_detector.classify(self.current_image)
-        self.result_color_groups = self.color_groups_detector.classify(self.current_image)
-        print('Done')
+
+
+        # Create thread objects for both functions
+        faces_thread = threading.Thread(target=self.face_detector.calculate, args=(self.current_image,))
+        colors_thread = threading.Thread(target=self.color_groups_detector.calculate, args=(self.current_image,))
+
+        # Start both threads
+        faces_thread.start()
+        colors_thread.start()
+
+        # Wait for both threads to finish
+        faces_thread.join()
+        colors_thread.join()
+
+        self.result_faces = self.face_detector.result
+        self.result_color_groups = self.color_groups_detector.result
+        # print('Done')
 
     def __str__(self):
-        return f'{self.result_faces}\n{self.result_color_groups}'
+        return f'Faces: {len(self.result_faces)} ColorGroups: {len(self.result_color_groups)}'
 
 
 class View:
@@ -56,4 +71,4 @@ class Controller:
         diff_mil = int(diff_sec * 1000)
         Controller.timestamp_last = time.time_ns()
         fps = int(1 / diff_sec)
-        print(f'{fps} Fps | {diff_mil} ms -> ')
+        print(f'{fps} Fps | {diff_mil} ms -> ', end='')
