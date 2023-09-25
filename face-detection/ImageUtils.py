@@ -5,20 +5,6 @@ import numpy as np
 from PIL import Image
 
 import Constants
-import PointClouds
-import Shapes
-
-
-class ColorPicker:
-
-    def __init__(self, color, count):
-        self.color = color
-        self.lower, self.upper = Colors.getColorLimits(color)
-        self.count = count
-
-    def calculate(self, hsv, sift, scale=1.0):
-        return PointClouds.PointCloud.fromLimits(hsv, sift, self.lower, self.upper, count=self.count, scale=scale,
-                                                 color=self.color)
 
 
 class Colors:
@@ -44,13 +30,14 @@ class ImageUtils:
         return cv2.flip(img, mode)
 
     @staticmethod
-    def scaleImage(img, scale=1.0):
-        width = int(img.shape[1] * scale)
-        height = int(img.shape[0] * scale)
+    def scaleImage(image, scale=1.0):
+        image_copied = image.copy()
+        width = int(image_copied.shape[1] * scale)
+        height = int(image_copied.shape[0] * scale)
         dim = (width, height)
 
         # resize image
-        resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(image_copied, dim, interpolation=cv2.INTER_AREA)
         return resized
 
     @staticmethod
@@ -83,18 +70,6 @@ class ImageUtils:
         _mask = Image.fromarray(mask)
         bbox = _mask.getbbox()  # Creates bounding box
         return bbox
-
-    @staticmethod
-    def getObjectByCascade(cascade, gray, offset=[0, 0], color=Constants.COLOR_BLACK) -> [Shapes.Rectangle]:
-        xOffset = offset[0]
-        yOffset = offset[1]
-        faces = cascade.detectMultiScale(gray, 1.1, 4)
-        ret = []
-        for (x, y, w, h) in faces:
-            x = xOffset + x
-            y = yOffset + y
-            ret.append(Shapes.Rectangle([x, y], [x + w, y], [x, y + h], [x + w, y + h], color=color))
-        return ret
 
     @staticmethod
     def getSubImageRect(img, position):
@@ -141,22 +116,6 @@ class ImageUtils:
         except:
             return None
         return mask
-
-    @staticmethod
-    def getQRLocation(qcd, img) -> tuple[bool, Shapes.Rectangle, Any]:
-
-        # Enhancing the image for better QR code locating
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # _, enhanced = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-        # Retrieving the QR code data
-        retval, _, points, _ = qcd.detectAndDecodeMulti(gray)
-        # print(points)
-
-        if retval:
-            a, b, c, d = points[0]
-            return True, Shapes.Rectangle(b.astype(int), a.astype(int), c.astype(int), d.astype(int)), gray
-
-        return False, None, gray
 
     class IO:
         FILE_INDEX = 0

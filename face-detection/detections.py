@@ -41,6 +41,14 @@ class Rectangle:
     def __str__(self):
         return f'Rectangle(x={self.x}, y={self.y}, width={self.width}, height={self.height})'
 
+    def scale(self, scale=1.0):
+        self.x = int(self.x*scale)
+        self.y = int(self.y*scale)
+        self.width = int(self.width*scale)
+        self.height = int(self.height*scale)
+        return self
+
+
 
 class CascadeClassifier(Classifier):
     def __init__(self, path_to_cascade: str):
@@ -58,17 +66,19 @@ class FaceClassifier(CascadeClassifier):
         super().__init__('haarcascade_frontalface_default.xml')
         self.eye_classifier = EyeClassifier()
 
-    def classify(self, image):
+    def classify(self, image, scale=0.5):
+        inverted_scale = 1 / scale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray_scaled = ImageUtils.scaleImage(gray, scale)
         result = []
-        result_faces = super().classify(gray)
+        result_faces = super().classify(gray_scaled)
         for face in result_faces:
             x, y, w, h = face
-            cut_face = ImageUtils.getSubImage(gray, x, y, w, h)
-            ImageUtils.IO.saveJpg('face', cut_face)
+            cut_face = ImageUtils.getSubImage(gray_scaled, x, y, w, h)
+            # ImageUtils.IO.saveJpg('face', cut_face)
             result_eyes = self.eye_classifier.classify(cut_face)
             if len(result_eyes) >= Constants.EYES_MINIMUM:
-                result.append(Rectangle(x, y, w, h))
+                result.append(Rectangle(x, y, w, h).scale(inverted_scale))
         return result
 
 
@@ -76,8 +86,9 @@ class EyeClassifier(CascadeClassifier):
     def __init__(self):
         super().__init__('haarcascade_eye.xml')
 
-    def classify(self, gray):
-        return super().classify(gray)
+    def classify(self, gray, scale=1.0):
+        gray_scaled = ImageUtils.scaleImage(gray, scale)
+        return super().classify(gray_scaled)
 
 
 class ColorGroupClassifier(Classifier):
@@ -86,7 +97,8 @@ class ColorGroupClassifier(Classifier):
         self.count = count
         self.sift = cv2.SIFT_create()
 
-    def classify(self, image):
+    def classify(self, image, scale=0.5):
+        inverted_scale = 1 / scale
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.lower, self.upper)
         mask = cv2.fastNlMeansDenoising(mask, None, h=20, templateWindowSize=3, searchWindowSize=5)
@@ -107,7 +119,7 @@ class ColorGroupClassifier(Classifier):
         for center in centers:
             if len(center) == 2:
                 x, y = center
-                result.append(Rectangle(x, y, 0, 0))
+                result.append(Rectangle(x, y, 0, 0).scale(inverted_scale))
 
         return result
 
@@ -135,4 +147,4 @@ class ColorGroupClassifier(Classifier):
         def draw_points_to_image_and_save(key_points, image):
             image_copied = image.copy()
             cv2.drawKeypoints(image_copied, key_points, image_copied)
-            ImageUtils.IO.saveJpg('keypoints', image_copied)
+            # ImageUtils.IO.saveJpg('keypoints', image_copied)

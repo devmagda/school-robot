@@ -9,14 +9,14 @@ import cv2
 # import ImageUtils
 
 # Screen Settings
-SCREEN_WIDTH = 1024
-SCREEN_HEIGHT = 576
+SCREEN_WIDTH = 960
+SCREEN_HEIGHT = 540
 
 # K Means variables
 KM_GROUP_COUNT = 2
 KM_CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 5, 2.0)  # ( type, max_iter = 10 , epsilon = 1.0 )
 KM_FLAGS = cv2.KMEANS_RANDOM_CENTERS
-KM_TRIES = 10
+KM_TRIES = 1
 
 # Color values
 # First parameter is color range for detecting hsv color space
