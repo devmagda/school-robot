@@ -16,6 +16,8 @@ class Model:
         self.current_image = None
         self.result_faces = []
         self.result_color_groups = []
+        self.old_faces = None
+        self.old_color_groups = None
 
     def calculate(self, image=None):
         if image is not None:
@@ -56,8 +58,8 @@ class Model:
 
     def get_face_images(self):
         faces = []
-        for x, y, width, height in self.result_faces:
-            faces.append(ImageUtils.getSubImage(self.current_image, x, y, width, height))
+        for face in self.result_faces:
+            faces.append(ImageUtils.getSubImage(self.current_image, face.x, face.y, face.width, face.height))
         return faces
 
     def get_color_key_points_image(self):
@@ -103,6 +105,8 @@ class Controller:
             self.view.view(self.model)
             self.print_fps()
             self.show_distances()
+            self.model.get_face_images()
+            self.model.get_color_key_points_image()
 
     def show_distances(self):
         for face in self.model.result_faces:

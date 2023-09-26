@@ -28,7 +28,7 @@ def add_rotation():
     return Response(status=400)
 
 @app.route('/rotation/set', methods=['GET'])
-def add_rotation():
+def set_rotation():
     # Get the two parameters from the URL query string
     y = int(request.args.get('y'))
     z = int(request.args.get('z'))
@@ -39,7 +39,7 @@ def add_rotation():
         exit_code = 1
         print('Y Rotation invalid')
     try:
-        conn.y_rotator.set_rotation(y)
+        conn.z_rotator.set_rotation(z)
     except ValueError:
         exit_code = 1
         print('Z Rotation invalid')

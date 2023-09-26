@@ -9,8 +9,8 @@ import cv2
 # import ImageUtils
 
 # Screen Settings
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 540
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 
 # K Means variables
 KM_GROUP_COUNT = 2

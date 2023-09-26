@@ -58,6 +58,7 @@ class Rectangle:
         center_x, center_y = self.center
         cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
 
+    # Rectangle.distance(s_temp, s)
     @staticmethod
     def distance(rectangle_1, rectangle_2):
         a = numpy.array(rectangle_1.center)

@@ -2,12 +2,15 @@
 import cv2
 from flask import Flask, render_template, Response
 
+import Constants
 from detections import CaptureDevice
 from images import ImageUtils
 from mcv import Model
 
 app = Flask(__name__)
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_HEIGHT)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_WIDTH)
 model = Model()
 
 @app.route('/')
@@ -23,11 +26,11 @@ def gen_frames2():
         else:
             found, _ = model.calculate(frame)
             frame = model.get_color_key_points_image()
-            frame_mirrored = ImageUtils.mirror(frame, 1)
-            ret, buffer = cv2.imencode('.jpg', frame_mirrored)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            faces = model.get_face_images()
+            # frame_mirrored = ImageUtils.mirror(frame, 1)
+            # ret, buffer = cv2.imencode('.jpg', frame_mirrored)
+            # frame = buffer.tobytes()
+            yield {'faces': faces, 'frame': frame}
 
 
 def gen_frames():
@@ -41,9 +44,24 @@ def gen_frames():
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+def get_key_points_image():
+    gen = gen_frames2()
+    while True:
+        result = next(gen)
+        frame = result['frame']
+        frame_mirrored = ImageUtils.mirror(frame, 1)
+        ret, buffer = cv2.imencode('.jpg', frame_mirrored)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+def get_response(function):
+    return Response(function, mimetype='multipart/x-mixed-replace; boundary=frame')
+
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_frames2(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(get_key_points_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     # defining server ip address and port
