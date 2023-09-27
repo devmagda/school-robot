@@ -56,6 +56,22 @@ def get_key_points_image():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
+@app.route('/play_sound')
+def play_sound():
+    from playsound import playsound
+    from playsound import PlaysoundException
+    try_harder = True
+    while try_harder:
+        try:
+            playsound('blaster.wav')
+            try_harder = False
+        except PlaysoundException:
+            pass
+    return Response(status=200)
+
+
+
+
 def get_response(function):
     return Response(function, mimetype='multipart/x-mixed-replace; boundary=frame')
 
