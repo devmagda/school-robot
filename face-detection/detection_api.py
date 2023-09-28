@@ -3,7 +3,6 @@ import cv2
 from flask import Flask, render_template, Response
 
 import Constants
-from detections import CaptureDevice
 from images import ImageUtils
 from mcv import Model
 
@@ -13,10 +12,12 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_HEIGHT)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_WIDTH)
 model = Model()
 
+
 @app.route('/')
 def index():
     # rendering webpage
     return render_template('index.html')
+
 
 def gen_frames2():
     while True:
@@ -44,6 +45,7 @@ def gen_frames():
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+
 def get_key_points_image():
     gen = gen_frames2()
     while True:
@@ -70,14 +72,14 @@ def play_sound():
     return Response(status=200)
 
 
-
-
 def get_response(function):
     return Response(function, mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/video_feed')
 def video_feed():
     return Response(get_key_points_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 if __name__ == '__main__':
     # defining server ip address and port

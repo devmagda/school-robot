@@ -7,13 +7,6 @@ import RPi.GPIO as GPIO
 
 
 class Pins:
-    ACTIVE = False
-
-    @staticmethod
-    def init():
-        GPIO.setmode(GPIO.BOARD)
-        Pins.ACTIVE = True
-        return
 
     @staticmethod
     def close():
@@ -22,8 +15,6 @@ class Pins:
 
 class Pin:
     def __init__(self, pin, value):
-        if not Pins.ACTIVE:
-            raise RuntimeError("Pins not initialized")
         self.pin = pin
         GPIO.setup(pin, value)
 
