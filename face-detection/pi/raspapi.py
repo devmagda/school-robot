@@ -6,7 +6,27 @@ app = Flask(__name__)
 
 conn = Controller()
 
+"""
+in5 = 5
+in6 = 0
+in7 = 11
+in8 = 9
 
+GPIO.setmode( GPIO.BCM )
+GPIO.setup( in5, GPIO.OUT )
+GPIO.setup( in6, GPIO.OUT )
+GPIO.setup( in7, GPIO.OUT )
+GPIO.setup( in8, GPIO.OUT )
+
+# initializing
+GPIO.output( in5, GPIO.LOW )
+GPIO.output( in6, GPIO.LOW )
+GPIO.output( in7, GPIO.LOW )
+GPIO.output( in8, GPIO.LOW )
+
+motor_pins = [in5,in6,in7,in8]
+motor_step_counter = 0 ;
+"""
 @app.route('/rotation/add', methods=['GET'])
 def add_rotation():
     # Get the two parameters from the URL query string

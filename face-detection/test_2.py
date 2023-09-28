@@ -9,3 +9,7 @@ faces6 = [Rectangle(60, 60, 0, 0)]
 faces7 = [Rectangle(60, 60, 0, 0)]
 faces8 = [Rectangle(60, 60, 0, 0)]
 faces9 = [Rectangle(60, 60, 0, 0)]
+
+
+
+from ULN2003Pi import
