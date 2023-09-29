@@ -14,7 +14,7 @@ class Model:
         self.face_detector = FaceClassifier()
         self.color_groups_detector = ColorGroupClassifier(count=count, color=color)
         self.current_image = None
-        self.result_faces = []
+        self.result_faces = [] #  Array of Rectangles
         self.result_color_groups = []
         self.old_faces = None
         self.old_color_groups = None
