@@ -7,7 +7,7 @@ class ULN2003():
     GPIO.setwarnings(False)
 
     # defining how long to wait between steps:
-    motor_latency = 0.005
+    motor_latency = 0.5
 
     def __init__(self, pins, latency=motor_latency, half_step=True):
         self.pins = pins
