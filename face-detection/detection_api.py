@@ -6,6 +6,7 @@ import requests
 from flask import Flask, render_template, Response
 
 import Constants
+from detections import CaptureDevice
 from images import ImageUtils
 from mcv import Model
 
@@ -30,7 +31,7 @@ def model_calculation_loop():
             break
         else:
             found, _ = model.calculate(frame)
-            frame = model.get_color_key_points_image()
+            frame = model.draw_current_view()
             face = model.get_face_image()
             end_time = time.time()
 

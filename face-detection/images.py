@@ -33,7 +33,7 @@ class ImageUtils:
         return image_copy
 
     @staticmethod
-    def draw_key_points_custom(image, key_points, bgr=Constants.COLOR_TRASH[1]):
+    def draw_key_points_custom(image, key_points, bgr=Constants.COLOR_RED[1]):
         image_copy = image.copy()
 
         # Draw keypoints on the image with the specified color

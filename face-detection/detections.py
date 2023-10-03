@@ -1,10 +1,15 @@
+import datetime
+
 import cv2
 import numpy
 import numpy as np
+from flask import logging
 
 import Constants
+from Logger import CustomLogger
 from images import ImageUtils, Colors
 
+logger = CustomLogger(__name__).get_logger()
 
 class CaptureDevice:
     def get_image(self):
@@ -18,6 +23,8 @@ class CaptureDevice:
         self.width, self.height, _ = self.image.shape
         self.center = Rectangle(width / 2, height / 2, 0, 0)
 
+    def log(self):
+        logger.info(f'Capture device: {self.width}, {self.height}, {self.center}')
 
 class Classifier:
     def __init__(self):
@@ -33,6 +40,9 @@ class ClassifierResult:
 
 
 class Rectangle:
+
+    # Time in seconds
+    survival_time = float(5)
     def __init__(self, x, y, width, height, bgr=[255, 255, 255]):
         self.x = int(x)
         self.y = int(y)
@@ -40,9 +50,33 @@ class Rectangle:
         self.height = int(height)
         self.center = (self.x + (self.width / 2), self.y + (self.height / 2))
         self.color = bgr
+        self.creation_time = datetime.datetime.now().timestamp()
+
+    def get_age(self):
+        now = datetime.datetime.now().timestamp()
+        age = now - self.creation_time
+        return float(age)
+
+    def get_color_by_age(self):
+        age = self.get_age()
+        factor_age = ((100 / Rectangle.survival_time) * age) / 100
+        b, g, r = self.color
+        b = int(b - factor_age * 255)
+        g = int(g - factor_age * 255)
+        r = int(factor_age * 255)
+        if b < 0:
+            b = 0
+        if g < 0:
+            g = 0
+        return [b, g, r]
+
+    def is_alive(self):
+        age = self.get_age()
+        return age < Rectangle.survival_time
+
 
     def __str__(self):
-        return f'Rectangle(x={self.x}, y={self.y}, width={self.width}, height={self.height})'
+        return f'Rectangle(x={self.x}, y={self.y}, width={self.width}, height={self.height}, center={self.center})'
 
     def scale(self, scale=1.0):
         self.x = int(self.x * scale)
@@ -52,11 +86,16 @@ class Rectangle:
         self.center = (self.x + (self.width / 2), self.y + (self.height / 2))
         return self
 
-    def draw(self, image):
-        cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
-                      color=self.color, thickness=2)
-        # center_x, center_y = self.center
-        # cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
+    def draw(self, image, only_center=False):
+        if only_center:
+            center_x, center_y = self.center
+            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
+        else:
+            center_x, center_y = self.center
+            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
+            cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
+                      color=self.get_color_by_age(), thickness=2)
+
 
     # Rectangle.distance(s_temp, s)
     @staticmethod
@@ -64,6 +103,13 @@ class Rectangle:
         a = numpy.array(rectangle_1.center)
         b = numpy.array(rectangle_2.center)
         return numpy.linalg.norm(a - b)
+
+    @staticmethod
+    def get_steps(rectangle_1, rectangle_2):
+        x1, y1 = rectangle_1.center
+        x2, y2 = rectangle_2.center
+        # logger.info(f'{rectangle_1.center}, {rectangle_2.center}')
+        return x2 - x1, y2 - y1
 
 
 class CascadeClassifier(Classifier):
@@ -114,6 +160,7 @@ class FaceClassifier(CascadeClassifier):
 
 
 class ColorGroupClassifier(Classifier):
+
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH):
         self.lower, self.upper = Colors.get_color_limits(color)
         self.color = color
@@ -148,8 +195,9 @@ class ColorGroupClassifier(Classifier):
         for center in centers:
             if len(center) == 2:
                 x, y = center
-                result.append(Rectangle(x, y, 0, 0, bgr=self.color[2]).scale(inverted_scale))
-
+                result.append(Rectangle(x-10, y-10, 20, 20, bgr=self.color[2]))
+        if len(result) == 0:
+            return None
         return result
 
     def calculate(self, image):

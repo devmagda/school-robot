@@ -1,12 +1,15 @@
-import threading
+import datetime
 import time
 
 import cv2
 
 import Constants
+from Logger import CustomLogger
 from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice, Rectangle
 from images import ImageUtils
+from pi.client import Client
 
+logger = CustomLogger(__name__).get_logger()
 
 class Model:
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH, capture_device=None):
@@ -18,16 +21,39 @@ class Model:
         self.result_color_groups = []
         self.old_face = None
         self.old_color_groups = []
+        self.found_face_timestamp = float(-1)
+        self.face_age = float(-1)
 
     def calculate(self, image=None):
         if image is not None:
             self.current_image = image
+            h, w, _ = self.current_image.shape
+            image_center = Rectangle(0, 0, w, h)
+
+            # Face calculation
             self.face_detector.calculate(self.current_image)
-            self.color_groups_detector.calculate(self.current_image)
             self.result_face = self.face_detector.result
             if self.result_face is not None:
                 self.old_face = self.result_face
+                z, y = Rectangle.get_steps(image_center, self.old_face)
+                logger.info(f'Steps: z = {z}, y = {y}')
+                w = 10
+                h = 10
+                # Client.add_rotation(x, y)
+            else:
+                if self.old_face is not None and not self.old_face.is_alive():
+                    self.old_face = None
+
+            self.color_groups_detector.calculate(self.current_image)
             self.result_color_groups = self.color_groups_detector.result
+            if self.result_color_groups is not None:
+                self.old_color_groups = self.result_color_groups
+            else:
+                if self.old_color_groups is not None:
+                    for color_group in self.old_color_groups:
+                        if not color_group.is_alive():
+                            self.old_color_groups = None
+                            # Client.shoot()
             return True, self
         return False, None
 
@@ -41,12 +67,19 @@ class Model:
         except:
             return None
 
-    def get_color_key_points_image(self):
+    def draw_current_view(self):
         image_copy = self.current_image.copy()
-        gray = cv2.cvtColor(image_copy, cv2.COLOR_BGR2GRAY)
-        colored = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
+        colored = image_copy
+
+        h, w, _ = self.current_image.shape
+        image_center = Rectangle(0, 0, w, h)
+        image_center.draw(colored, only_center=True)
+
         if self.old_face is not None:
             self.old_face.draw(colored)
+        if self.old_color_groups is not None:
+            for rectangle in self.old_color_groups:
+                rectangle.draw(colored)
         gray_with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
         return gray_with_key_points
 
@@ -87,7 +120,7 @@ class Controller:
             self.print_fps()
             self.show_distances()
             self.model.get_face_images()
-            self.model.get_color_key_points_image()
+            self.model.draw_current_view()
 
     def show_distances(self):
         for face in self.model.result_faces:
