@@ -89,12 +89,12 @@ class Rectangle:
     def draw(self, image, only_center=False):
         if only_center:
             center_x, center_y = self.center
-            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
+            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=2)
         else:
             center_x, center_y = self.center
-            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
+            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=2)
             cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
-                      color=self.get_color_by_age(), thickness=2)
+                      color=self.get_color_by_age(), thickness=1)
 
 
     # Rectangle.distance(s_temp, s)
@@ -167,13 +167,14 @@ class ColorGroupClassifier(Classifier):
         self.count = count
         self.sift = cv2.SIFT_create()
         self.key_points = []
+        self.old_mask = None
 
     def classify(self, image, scale=1 / 5):
         inverted_scale = 1 / scale
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.lower, self.upper)
-        scaled_mask = ImageUtils.scaleImage(mask, scale)
-        scaled_mask = cv2.fastNlMeansDenoising(scaled_mask, None, h=20, templateWindowSize=3, searchWindowSize=5)
+        denoised = cv2.fastNlMeansDenoising(mask, None, h=40, templateWindowSize=3, searchWindowSize=5)
+        scaled_mask = ImageUtils.scaleImage(denoised, scale)
         scaled_key_points = []
         for key_point in self.sift.detect(scaled_mask, None):
             x, y = key_point.pt
@@ -198,6 +199,7 @@ class ColorGroupClassifier(Classifier):
                 result.append(Rectangle(x-10, y-10, 20, 20, bgr=self.color[2]))
         if len(result) == 0:
             return None
+        self.old_mask = mask
         return result
 
     def calculate(self, image):

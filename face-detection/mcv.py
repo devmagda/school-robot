@@ -78,10 +78,12 @@ class Model:
         if self.old_face is not None:
             self.old_face.draw(colored)
         if self.old_color_groups is not None:
+            colored = ImageUtils.draw_mask_outline(colored, self.color_groups_detector.old_mask)
             for rectangle in self.old_color_groups:
                 rectangle.draw(colored)
-        gray_with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
-        return gray_with_key_points
+        with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
+
+        return with_key_points
 
 
 class View:
