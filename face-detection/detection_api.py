@@ -1,5 +1,6 @@
 # main.py# import the necessary packages
 import time
+from threading import Thread
 
 import cv2
 import requests
@@ -30,9 +31,10 @@ def model_calculation_loop():
         if not success:
             break
         else:
+            face = model.last_valid_face
             found, _ = model.calculate(frame)
             frame = model.draw_current_view()
-            face = model.get_face_image()
+
             end_time = time.time()
 
             delta = end_time - start_time
@@ -78,6 +80,10 @@ def get_face_image():
 
 @app.route('/play_sound')
 def play_sound():
+    Thread(target=_play_sound).start()
+    return Response(status=200)
+
+def _play_sound():
     from playsound import playsound
     from playsound import PlaysoundException
     try_harder = True
@@ -87,7 +93,6 @@ def play_sound():
             try_harder = False
         except PlaysoundException:
             pass
-    return Response(status=200)
 
 
 def get_response(function):

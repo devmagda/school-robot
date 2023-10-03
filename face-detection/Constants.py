@@ -28,8 +28,8 @@ COLOR_RED = (20, [0, 0, 255], [255, 0, 0])  # Somehow doesn't work so good
 COLOR_YELLOW = (10, [0, 255, 255], [255, 255, 0])
 COLOR_GREEN = (20, [0, 255, 0], [0, 255, 0])
 COLOR_TURQUOISE = (10, [255, 255, 0], [0, 255, 255])
-COLOR_WHITE = (360, [0, 0, 0], [0, 0, 0])
-COLOR_BLACK = (360, [255, 255, 255], [255, 255, 255])
+COLOR_BLACK = (360, [0, 0, 0], [0, 0, 0])
+COLOR_WHITE = (360, [255, 255, 255], [255, 255, 255])
 
 COLOR_TRASH = COLOR_GREEN
 
@@ -40,7 +40,7 @@ COLOR_TRASH = COLOR_GREEN
 
 # HSV Detection Values
 HSV_LIMIT_UPPER = 255
-HSV_LIMIT_LOWER = 50
+HSV_LIMIT_LOWER = 40
 
 # Shapes Text values
 TEXT_FONT = cv2.FONT_HERSHEY_SIMPLEX

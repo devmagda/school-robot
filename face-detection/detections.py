@@ -86,13 +86,13 @@ class Rectangle:
         self.center = (self.x + (self.width / 2), self.y + (self.height / 2))
         return self
 
-    def draw(self, image, only_center=False):
+    def draw(self, image, only_center=False, radius=4, thickness=2):
         if only_center:
             center_x, center_y = self.center
-            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=2)
+            cv2.circle(image, (int(center_x), int(center_y)), radius, color=self.get_color_by_age(), thickness=thickness)
         else:
             center_x, center_y = self.center
-            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=2)
+            cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.get_color_by_age(), thickness=2)
             cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
                       color=self.get_color_by_age(), thickness=1)
 
@@ -199,7 +199,7 @@ class ColorGroupClassifier(Classifier):
                 result.append(Rectangle(x-10, y-10, 20, 20, bgr=self.color[2]))
         if len(result) == 0:
             return None
-        self.old_mask = mask
+        self.old_mask = denoised
         return result
 
     def calculate(self, image):

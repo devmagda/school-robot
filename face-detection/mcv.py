@@ -1,5 +1,6 @@
 import datetime
 import time
+from threading import Thread
 
 import cv2
 
@@ -23,6 +24,21 @@ class Model:
         self.old_color_groups = []
         self.found_face_timestamp = float(-1)
         self.face_age = float(-1)
+        self.last_valid_face = None
+
+    def play_sound_threaded(self):
+        Thread(target=self._play_sound).start()
+
+    def _play_sound(self):
+        from playsound import playsound
+        from playsound import PlaysoundException
+        try_harder = True
+        while try_harder:
+            try:
+                playsound('blaster.wav')
+                try_harder = False
+            except PlaysoundException:
+                pass
 
     def calculate(self, image=None):
         if image is not None:
@@ -34,6 +50,7 @@ class Model:
             self.face_detector.calculate(self.current_image)
             self.result_face = self.face_detector.result
             if self.result_face is not None:
+                self.last_valid_face = self.get_face_image()
                 self.old_face = self.result_face
                 z, y = Rectangle.get_steps(image_center, self.old_face)
                 logger.info(f'Steps: z = {z}, y = {y}')
@@ -53,6 +70,7 @@ class Model:
                     for color_group in self.old_color_groups:
                         if not color_group.is_alive():
                             self.old_color_groups = None
+                            self.play_sound_threaded()
                             # Client.shoot()
             return True, self
         return False, None
@@ -71,20 +89,19 @@ class Model:
         image_copy = self.current_image.copy()
         colored = image_copy
 
-        h, w, _ = self.current_image.shape
-        image_center = Rectangle(0, 0, w, h)
-        image_center.draw(colored, only_center=True)
-
         if self.old_face is not None:
             self.old_face.draw(colored)
         if self.old_color_groups is not None:
             colored = ImageUtils.draw_mask_outline(colored, self.color_groups_detector.old_mask)
             for rectangle in self.old_color_groups:
-                rectangle.draw(colored)
-        with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
+                rectangle.draw(colored, only_center=True)
+        # with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
 
-        return with_key_points
+        h, w, _ = image_copy.shape
+        image_center = Rectangle(0, 0, w, h)
+        image_center.draw(colored, only_center=True, radius=5, thickness=1)
 
+        return colored
 
 class View:
     def __init__(self):
