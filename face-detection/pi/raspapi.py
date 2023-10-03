@@ -45,27 +45,33 @@ def add_rotation():
         print('Z Rotation invalid')
     if exit_code == 0:
         return Response(status=200)
-    return Response(status=400)
+    else:
+        return Response(status=400)
 
 @app.route('/rotation/set', methods=['GET'])
 def set_rotation():
+    exit_code = 0
+
     # Get the two parameters from the URL query string
     y = int(request.args.get('y'))
     z = int(request.args.get('z'))
-    exit_code = 0
+
     try:
-        conn.y_rotator.set_rotation(y)
+        conn.y.set_rotation(steps=y)
     except ValueError:
         exit_code = 1
         print('Y Rotation invalid')
+
     try:
         conn.z_rotator.set_rotation(z)
     except ValueError:
         exit_code = 1
         print('Z Rotation invalid')
+
     if exit_code == 0:
         return Response(status=200)
-    return Response(status=400)
+    else:
+        return Response(status=400)
 
 
 
@@ -91,8 +97,8 @@ class Client:
     def get(endpoint):
         import requests
         response = requests.get(f'{Client.URL}/{endpoint}')
-        if response.status_code != 200:
-            raise ValueError('An Error occurred')
+        if response.status_code == 400:
+            raise ValueError('Could not do action!')
 
 
 # Run the Flask application if this script is executed

@@ -2,8 +2,9 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-8  offset-lg-2">
-            <h3 class="mt-5">Live Streaming</h3>
-            <img src="{{ url_for('video_feed') }}" width="50%">
+            <h3 class="mt-5">{{ fps }}</h3>
+            <img src="{{ url_for('face_feed') }}" width="200px" height="200px" >
+            <img src="{{ url_for('global_feed') }}" width="800px" height="600px" >
         </div>
     </div>
 </div>

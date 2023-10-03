@@ -14,59 +14,40 @@ class Model:
         self.face_detector = FaceClassifier()
         self.color_groups_detector = ColorGroupClassifier(count=count, color=color)
         self.current_image = None
-        self.result_faces = [] #  Array of Rectangles
+        self.result_face = None #  Array of Rectangles
         self.result_color_groups = []
-        self.old_faces = None
-        self.old_color_groups = None
+        self.old_face = None
+        self.old_color_groups = []
 
     def calculate(self, image=None):
         if image is not None:
             self.current_image = image
-            found = True
-        else:
-            found, self.current_image = self.capture_device.get_image()
-        if found:
             self.face_detector.calculate(self.current_image)
             self.color_groups_detector.calculate(self.current_image)
-
-            self.result_faces = self.face_detector.result
+            self.result_face = self.face_detector.result
+            if self.result_face is not None:
+                self.old_face = self.result_face
             self.result_color_groups = self.color_groups_detector.result
-        return found, self
-
-
-    def calculate_threaded(self):
-        found, self.current_image = self.capture_device.get_image()
-
-        # Create thread objects for both functions
-        faces_thread = threading.Thread(target=self.face_detector.calculate, args=(self.current_image,))
-        colors_thread = threading.Thread(target=self.color_groups_detector.calculate, args=(self.current_image,))
-
-        # Start both threads
-        faces_thread.start()
-        colors_thread.start()
-
-        # Wait for both threads to finish
-        faces_thread.join()
-        colors_thread.join()
-
-        self.result_faces = self.face_detector.result
-        self.result_color_groups = self.color_groups_detector.result
-        return self
+            return True, self
+        return False, None
 
     def __str__(self):
         return f'Faces: {len(self.result_faces)} ColorGroups: {len(self.result_color_groups)}'
 
-    def get_face_images(self):
-        faces = []
-        for face in self.result_faces:
-            faces.append(ImageUtils.getSubImage(self.current_image, face.x, face.y, face.width, face.height))
-        return faces
+    def get_face_image(self):
+        try:
+            face = self.old_face
+            return ImageUtils.getSubImage(self.current_image, face.x, face.y, face.width, face.height)
+        except:
+            return None
 
     def get_color_key_points_image(self):
         image_copy = self.current_image.copy()
         gray = cv2.cvtColor(image_copy, cv2.COLOR_BGR2GRAY)
-        colored = cv2.cvtColor(gray,cv2.COLOR_GRAY2RGB)
-        gray_with_key_points = ImageUtils.draw_key_points(colored, self.color_groups_detector.key_points)
+        colored = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
+        if self.old_face is not None:
+            self.old_face.draw(colored)
+        gray_with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
         return gray_with_key_points
 
 

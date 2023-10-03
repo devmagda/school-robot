@@ -55,8 +55,8 @@ class Rectangle:
     def draw(self, image):
         cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
                       color=self.color, thickness=2)
-        center_x, center_y = self.center
-        cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
+        # center_x, center_y = self.center
+        # cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.color, thickness=4)
 
     # Rectangle.distance(s_temp, s)
     @staticmethod
@@ -107,7 +107,10 @@ class FaceClassifier(CascadeClassifier):
         return result
 
     def calculate(self, gray):
-        self.result = self.classify(gray)
+        try:
+            self.result = self.classify(gray)[0]
+        except:
+            self.result = None
 
 
 class ColorGroupClassifier(Classifier):

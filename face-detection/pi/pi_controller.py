@@ -1,16 +1,8 @@
+import time
+
 import RPi.GPIO as GPIO
 
-
-# Pin configuration
-# 40 -> Y
-# 38 -> Z
-
-
-class Pins:
-
-    @staticmethod
-    def close():
-        GPIO.cleanup()
+from pi.uln2003 import ULN2003
 
 
 class Pin:
@@ -42,64 +34,89 @@ class Led(Pin):
             self.activate()
 
 
-class Rotator(Pin):
-    def __init__(self, pin):
-        super().__init__(pin, GPIO.OUT)
-        self.pwm = GPIO.PWM(self.pin, 50)
-        self.pwm.run(0)
-        self.current_angle = 0
+class SingleRotator:
+    def __init__(self, pins=None, limits=(1000, -1000)):
+        self.uln_controller = ULN2003(pins)
+        self.steps_position = 0
+        self.limit_upper, self.limit_lower = limits
 
-    def __del__(self):
-        self.pwm.stop()
+    def set_rotation(self, steps=0):
+        steps = steps - self.steps_position
+        self.add_rotation(steps)
 
-    def set_rotation(self, angle):
-        if angle < 0 or angle > 180:
-            raise ValueError('Angle out of range')
-        self.current_angle = angle
-        duty_cycle = self.calculate_duty_cycle()
-        self.pwm.ChangeDutyCycle(duty_cycle)
+    def add_rotation(self, steps=0):
+        temp_position = self.steps_position + steps
+        if temp_position <= self.limit_upper and temp_position >= self.limit_lower:
+            self.steps_position = temp_position
+            self.uln_controller.step(n=steps)
+        else:
+            raise ValueError(f'Out of range: {temp_position}')
 
-    def add_rotation(self, angle):
-        angle = self.current_angle + angle  # Pre calculate value
-        self.set_rotation(angle)
 
-    def calculate_duty_cycle(self):
-        return 2.5 + (self.current_angle / 18)
+class DualRotator(SingleRotator):
+    def __init__(self, pins_left=None, pins_right=None, limits=(1000, -1000)):
+        upper, lower = limits
+        self.left = SingleRotator(pins_left, limits=limits)
+        self.right = SingleRotator(pins_right, limits=(lower, upper))
 
-    def left(self, angle):
-        self.add_rotation(angle)
+    def set_rotation(self, steps=0):
+        self.left.set_rotation(steps=steps)
+        self.right.set_rotation(steps=-steps)
 
-    def right(self, angle):
-        self.add_rotation(-angle)
-
-    def up(self, angle):
-        self.add_rotation(angle)
-
-    def down(self, angle):
-        self.add_rotation(angle)
+    def add_rotation(self, steps=0):
+        self.left.add_rotation(steps=steps)
+        self.right.add_rotation(steps=-steps)
 
 
 class Controller:
-    def __init__(self):
-        Pins.init()
-        self.y_rotator = Rotator(40)
-        self.y_rotator.set_rotation(90)
-        self.z_rotator = Rotator(38)
-        self.z_rotator.set_rotation(90)
+    pins_y_left = (3, 5, 7, 9)
+    pins_y_right = (17, 18, 23, 24)
+    pins_z = (10, 11, 14, 15)
+
+    pin_gun = 10  # GPIO Notation needed
+
+    limits_z = (1000, -1000)
+    limits_y = (1000, -1000)
+
+    def __init__(self, dual=False):
+
+        self.gun = Led(Controller.pin_gun)
+
+        self.z = SingleRotator(
+            pins=Controller.pins_z,
+            limits=Controller.limits_z
+        )
+
+        if dual:
+            self.y = DualRotator(
+                pins_left=Controller.pins_y_left,
+                pins_right=Controller.pins_y_right,
+                limits=Controller.limits_y
+            )
+        else:
+            self.y = SingleRotator(
+                pins=Controller.pins_y_right,
+                limits=Controller.limits_y
+            )
+
+    def shoot(self):
+        self.gun.activate()
+        time.sleep(secs=1)
+        self.gun.deactivate()
 
     def up(self, angle):
-        self.y_rotator.add_rotation(-angle)
+        self.y.add_rotation(-angle)
 
     def down(self, angle):
-        self.y_rotator.add_rotation(angle)
+        self.y.add_rotation(angle)
 
     def left(self, angle):
-        self.z_rotator.add_rotation(-angle)
+        self.z.add_rotation(-angle)
 
     def right(self, angle):
-        self.z_rotator.add_rotation(angle)
+        self.z.add_rotation(angle)
 
     def __del__(self):
-        self.z_rotator.__del__()
-        self.y_rotator.__del__()
-        Pins.close()
+        self.z.set_rotation(steps=0)
+        self.y.set_rotation(steps=0)
+        GPIO.cleanup()

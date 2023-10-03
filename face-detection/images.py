@@ -29,7 +29,17 @@ class ImageUtils:
     @staticmethod
     def draw_key_points(image, key_points):
         image_copy = image.copy()
-        cv2.drawKeypoints(image_copy, key_points, image_copy)
+        cv2.drawKeypoints(image_copy, key_points, image_copy, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        return image_copy
+
+    @staticmethod
+    def draw_key_points_custom(image, key_points, bgr=Constants.COLOR_TRASH[1]):
+        image_copy = image.copy()
+
+        # Draw keypoints on the image with the specified color
+        for kp in key_points:
+            x, y = map(int, kp.pt)
+            cv2.circle(image_copy, (x, y), 2, bgr, -1)
         return image_copy
 
     @staticmethod
