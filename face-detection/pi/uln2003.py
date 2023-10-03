@@ -1,5 +1,6 @@
-import RPi.GPIO as GPIO
 import time
+
+import RPi.GPIO as GPIO
 
 
 class ULN2003():
@@ -7,7 +8,7 @@ class ULN2003():
     GPIO.setwarnings(False)
 
     # defining how long to wait between steps:
-    motor_latency = 0.5
+    motor_latency = 0.0008
 
     def __init__(self, pins, latency=motor_latency, half_step=True):
         self.pins = pins
@@ -82,3 +83,14 @@ class ULN2003():
             time.sleep(self.latency)
 
         return None
+
+
+class AxisRotator:
+    def __init__(self, pins_left=(3, 5, 7, 9), pins_right=(17, 18, 23, 24)):
+        self.left = ULN2003(pins_left)
+        self.right = ULN2003(pins_right)
+
+    def step(self, steps=1000, step_size=1):
+        while steps != 0:
+            self.left.step(n=step_size)
+            self.right.step(n=-step_size)

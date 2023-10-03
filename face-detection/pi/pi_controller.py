@@ -46,7 +46,7 @@ class Rotator(Pin):
     def __init__(self, pin):
         super().__init__(pin, GPIO.OUT)
         self.pwm = GPIO.PWM(self.pin, 50)
-        self.pwm.start(0)
+        self.pwm.run(0)
         self.current_angle = 0
 
     def __del__(self):

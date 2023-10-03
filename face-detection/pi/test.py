@@ -12,8 +12,9 @@ in6 = 0
 in7 = 11
 in8 = 9
 
-pins_z = (9, 11, 0, 5)
-pins_y = (26, 19, 13, 6)
+pins_y_left = (3, 5, 7, 9)
+pins_y_right = (17, 18, 23, 24)
+pins_z = (10, 11, 14, 15)
 
 # careful lowering this, at some point you run into the mechanical limitation of how quick your motor can move
 step_sleep = 0.005
