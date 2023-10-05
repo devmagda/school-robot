@@ -2,7 +2,7 @@ import time
 
 import RPi.GPIO as GPIO
 
-from pi.uln2003 import ULN2003
+from uln2003 import ULN2003
 
 
 class Pin:
@@ -46,11 +46,10 @@ class SingleRotator:
 
     def add_rotation(self, steps=0):
         temp_position = self.steps_position + steps
-        if temp_position <= self.limit_upper and temp_position >= self.limit_lower:
-            self.steps_position = temp_position
+        # if temp_position <= self.limit_upper and temp_position >= self.limit_lower:
+        self.steps_position = temp_position
+        if steps != 0:
             self.uln_controller.step(n=steps)
-        else:
-            raise ValueError(f'Out of range: {temp_position}')
 
 
 class DualRotator(SingleRotator):
@@ -73,10 +72,10 @@ class Controller:
     pins_y_right = (17, 18, 23, 24)
     pins_z = (10, 11, 14, 15)
 
-    pin_gun = 10  # GPIO Notation needed
+    pin_gun = 25  # GPIO Notation needed
 
-    limits_z = (1000, -1000)
-    limits_y = (1000, -1000)
+    limits_z = (2000, -2000)
+    limits_y = (500, -500)
 
     def __init__(self, dual=False):
 
@@ -101,20 +100,49 @@ class Controller:
 
     def shoot(self):
         self.gun.activate()
-        time.sleep(secs=1)
+        time.sleep(1)
         self.gun.deactivate()
 
     def up(self, angle):
-        self.y.add_rotation(-angle)
-
-    def down(self, angle):
         self.y.add_rotation(angle)
 
+    def down(self, angle):
+        self.y.add_rotation(-angle)
+
     def left(self, angle):
-        self.z.add_rotation(-angle)
+        self.z.add_rotation(angle)
 
     def right(self, angle):
-        self.z.add_rotation(angle)
+        self.z.add_rotation(-angle)
+
+    def __get_single_step(self, steps):
+        if steps > 0:
+            return int(1)
+        if steps < 0:
+            return int(-1)
+        return int(0)
+
+    def set(self, z, y):
+        steps_z = z - self.z.steps_position
+        steps_y = y - self.y.steps_position
+        self.move(steps_z, steps_y)
+
+    def move(self, z, y):
+        loop_counter = 0
+        if abs(z) >= abs(y):
+            loop_size = abs(z)
+        else:
+            loop_size = abs(y)
+
+        step_z = self.__get_single_step(z)
+        step_y = self.__get_single_step(y)
+
+        while loop_size >= loop_counter:
+            loop_counter = loop_counter + 1
+            if loop_counter <= abs(y):
+                self.up(step_y)
+            if loop_counter <= abs(z):
+                self.right(step_z)
 
     def __del__(self):
         self.z.set_rotation(steps=0)

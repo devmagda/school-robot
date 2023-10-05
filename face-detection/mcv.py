@@ -1,4 +1,3 @@
-import datetime
 import time
 from threading import Thread
 
@@ -12,13 +11,14 @@ from pi.client import Client
 
 logger = CustomLogger(__name__).get_logger()
 
+
 class Model:
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH, capture_device=None):
         self.capture_device = capture_device
         self.face_detector = FaceClassifier()
         self.color_groups_detector = ColorGroupClassifier(count=count, color=color)
         self.current_image = None
-        self.result_face = None #  Array of Rectangles
+        self.result_face = None  # Array of Rectangles
         self.result_color_groups = []
         self.old_face = None
         self.old_color_groups = []
@@ -32,13 +32,12 @@ class Model:
     def _play_sound(self):
         from playsound import playsound
         from playsound import PlaysoundException
-        try_harder = True
-        while try_harder:
-            try:
-                playsound('blaster.wav')
-                try_harder = False
-            except PlaysoundException:
-                pass
+        time.sleep(4)
+        try:
+            playsound('blaster.wav')
+            try_harder = False
+        except PlaysoundException:
+            pass
 
     def calculate(self, image=None):
         if image is not None:
@@ -53,10 +52,7 @@ class Model:
                 self.last_valid_face = self.get_face_image()
                 self.old_face = self.result_face
                 z, y = Rectangle.get_steps(image_center, self.old_face)
-                logger.info(f'Steps: z = {z}, y = {y}')
-                w = 10
-                h = 10
-                # Client.add_rotation(x, y)
+                Client.add_rotation(-z, -y)
             else:
                 if self.old_face is not None and not self.old_face.is_alive():
                     self.old_face = None
@@ -70,8 +66,9 @@ class Model:
                     for color_group in self.old_color_groups:
                         if not color_group.is_alive():
                             self.old_color_groups = None
+                            Client.shoot()
                             self.play_sound_threaded()
-                            # Client.shoot()
+                            break
             return True, self
         return False, None
 
@@ -102,6 +99,7 @@ class Model:
         image_center.draw(colored, only_center=True, radius=5, thickness=1)
 
         return colored
+
 
 class View:
     def __init__(self):

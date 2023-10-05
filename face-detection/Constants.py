@@ -9,8 +9,8 @@ import cv2
 # import ImageUtils
 
 # Screen Settings
-SCREEN_WIDTH = 320*2
-SCREEN_HEIGHT = 240*2
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
 # K Means variables
 KM_GROUP_COUNT = 2
@@ -40,7 +40,7 @@ COLOR_TRASH = COLOR_GREEN
 
 # HSV Detection Values
 HSV_LIMIT_UPPER = 255
-HSV_LIMIT_LOWER = 40
+HSV_LIMIT_LOWER = 75
 
 # Shapes Text values
 TEXT_FONT = cv2.FONT_HERSHEY_SIMPLEX
@@ -75,3 +75,6 @@ MIRROR_VIEW = False
 
 CLASSIFIER_FACE = 'haarcascade_frontalface_default.xml'
 CLASSIFIER_EYE = 'haarcascade_eye.xml'
+
+
+RECTANGLE_MAX_AGE = 3

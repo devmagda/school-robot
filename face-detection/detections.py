@@ -3,13 +3,13 @@ import datetime
 import cv2
 import numpy
 import numpy as np
-from flask import logging
 
 import Constants
 from Logger import CustomLogger
 from images import ImageUtils, Colors
 
 logger = CustomLogger(__name__).get_logger()
+
 
 class CaptureDevice:
     def get_image(self):
@@ -26,6 +26,7 @@ class CaptureDevice:
     def log(self):
         logger.info(f'Capture device: {self.width}, {self.height}, {self.center}')
 
+
 class Classifier:
     def __init__(self):
         self.result = []
@@ -40,9 +41,9 @@ class ClassifierResult:
 
 
 class Rectangle:
-
     # Time in seconds
-    survival_time = float(5)
+    survival_time = float(Constants.RECTANGLE_MAX_AGE)
+
     def __init__(self, x, y, width, height, bgr=[255, 255, 255]):
         self.x = int(x)
         self.y = int(y)
@@ -74,7 +75,6 @@ class Rectangle:
         age = self.get_age()
         return age < Rectangle.survival_time
 
-
     def __str__(self):
         return f'Rectangle(x={self.x}, y={self.y}, width={self.width}, height={self.height}, center={self.center})'
 
@@ -87,15 +87,16 @@ class Rectangle:
         return self
 
     def draw(self, image, only_center=False, radius=4, thickness=2):
+        center_x, center_y = self.center
+        image = cv2.putText(image, f'{self.center}', (int(center_x), int(center_y)), Constants.TEXT_FONT,
+                            Constants.TEXT_FONT_SCALE, self.get_color_by_age(), thickness=1)
         if only_center:
-            center_x, center_y = self.center
-            cv2.circle(image, (int(center_x), int(center_y)), radius, color=self.get_color_by_age(), thickness=thickness)
+            cv2.circle(image, (int(center_x), int(center_y)), radius, color=self.get_color_by_age(),
+                       thickness=thickness)
         else:
-            center_x, center_y = self.center
             cv2.circle(image, (int(center_x), int(center_y)), 2, color=self.get_color_by_age(), thickness=2)
             cv2.rectangle(image, (self.x, self.y), (self.x + self.width, self.y + self.height),
-                      color=self.get_color_by_age(), thickness=1)
-
+                          color=self.get_color_by_age(), thickness=1)
 
     # Rectangle.distance(s_temp, s)
     @staticmethod
@@ -148,7 +149,7 @@ class FaceClassifier(CascadeClassifier):
             cut_face = ImageUtils.getSubImage(gray_scaled, x, y, w, h)
             # ImageUtils.IO.saveJpg('face', cut_face)
             result_eyes = self.eye_classifier.classify(cut_face)
-            if len(result_eyes) >= Constants.EYES_MINIMUM:
+            if Constants.FILTER_FACES and len(result_eyes) >= Constants.EYES_MINIMUM:
                 result.append(Rectangle(x, y, w, h, bgr=[255, 0, 0]).scale(inverted_scale))
         return result
 
@@ -196,7 +197,7 @@ class ColorGroupClassifier(Classifier):
         for center in centers:
             if len(center) == 2:
                 x, y = center
-                result.append(Rectangle(x-10, y-10, 20, 20, bgr=self.color[2]))
+                result.append(Rectangle(x - 10, y - 10, 20, 20, bgr=self.color[2]))
         if len(result) == 0:
             return None
         self.old_mask = denoised

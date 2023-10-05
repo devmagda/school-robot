@@ -83,14 +83,3 @@ class ULN2003():
             time.sleep(self.latency)
 
         return None
-
-
-class AxisRotator:
-    def __init__(self, pins_left=(3, 5, 7, 9), pins_right=(17, 18, 23, 24)):
-        self.left = ULN2003(pins_left)
-        self.right = ULN2003(pins_right)
-
-    def step(self, steps=1000, step_size=1):
-        while steps != 0:
-            self.left.step(n=step_size)
-            self.right.step(n=-step_size)

@@ -12,7 +12,7 @@ from images import ImageUtils
 from mcv import Model
 
 app = Flask(__name__)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_HEIGHT)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_WIDTH)
 model = Model()
@@ -31,8 +31,9 @@ def model_calculation_loop():
         if not success:
             break
         else:
+            frame_mirrored = ImageUtils.mirror(frame, 1)
             face = model.last_valid_face
-            found, _ = model.calculate(frame)
+            found, _ = model.calculate(frame_mirrored)
             frame = model.draw_current_view()
 
             end_time = time.time()
@@ -59,8 +60,7 @@ def get_global_image():
     while True:
         result = next(gen)
         frame = result['frame']
-        frame_mirrored = ImageUtils.mirror(frame, 1)
-        ret, buffer = cv2.imencode('.jpg', frame_mirrored)
+        ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -72,8 +72,7 @@ def get_face_image():
         frame = result['face']
         if frame is None:
             continue
-        frame_mirrored = ImageUtils.mirror(frame, 1)
-        ret, buffer = cv2.imencode('.jpg', frame_mirrored)
+        ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
