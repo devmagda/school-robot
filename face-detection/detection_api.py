@@ -7,21 +7,27 @@ import requests
 from flask import Flask, render_template, Response
 
 import Constants
-from detections import CaptureDevice
+from detections import FaceUtils
 from images import ImageUtils
 from mcv import Model
 
 app = Flask(__name__)
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_HEIGHT)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_WIDTH)
 model = Model()
 
 
 @app.route('/')
-def index():
+def index_page():
     # rendering webpage
     return render_template('index.html')
+
+@app.route('/history')
+def history_page():
+    result_set = FaceUtils.load_from_db()
+    html = FaceUtils.to_html_view(result_set)
+    return render_template('history.html', data=f'{html}')
 
 
 def model_calculation_loop():

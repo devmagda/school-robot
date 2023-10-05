@@ -1,8 +1,13 @@
+import base64
+
 import cv2
 import numpy as np
 
 import Constants
+from Logger import CustomLogger
+from db.sql import Connection, SqlUtil
 
+logger = CustomLogger(__name__).get_logger()
 
 class Colors:
 
@@ -21,6 +26,15 @@ class Colors:
 
 
 class ImageUtils:
+    conn = Connection()
+
+    @staticmethod
+    def to_base_64(image):
+        # Encode the image as a JPG in memory
+        _, image_data = cv2.imencode('.jpg', image)
+        # Convert the binary image data to a base64 string
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+        return image_base64
 
     @staticmethod
     def mirror(img, mode):

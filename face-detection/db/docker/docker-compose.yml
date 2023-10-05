@@ -1,0 +1,20 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./init_scripts:/docker-entrypoint-initdb.d
+      # - ./postgres_data:/var/lib/postgresql/data
+
+volumes:
+  init_scripts:
+  # postgres_data:

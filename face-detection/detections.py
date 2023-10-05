@@ -3,10 +3,12 @@ import datetime
 import cv2
 import numpy
 import numpy as np
+from deepface import DeepFace
 
 import Constants
 from Logger import CustomLogger
-from images import ImageUtils, Colors
+from db.sql import SqlUtil
+from images import ImageUtils
 
 logger = CustomLogger(__name__).get_logger()
 
@@ -129,6 +131,7 @@ class EyeClassifier(CascadeClassifier):
         super().__init__('haarcascade_eye.xml')
 
     def classify(self, gray, scale=1.0):
+        from images import ImageUtils
         gray_scaled = ImageUtils.scaleImage(gray, scale)
         return super().classify(gray_scaled)
 
@@ -138,9 +141,24 @@ class FaceClassifier(CascadeClassifier):
         super().__init__('haarcascade_frontalface_default.xml')
         self.eye_classifier = EyeClassifier()
 
+    @staticmethod
+    def analyze(image, actions=['age', 'gender', 'race', 'emotion']) -> tuple[str, str, {}]:
+        try:
+            data = DeepFace.analyze(
+                image,
+                actions=actions,
+                detector_backend='opencv',
+                silent=True
+            )
+            # logger.info(f'Data: {data[0]}')
+            return data[0]
+        except:
+            raise ValueError('Could not analyze')
+
     def classify(self, image, scale=0.5):
         inverted_scale = 1 / scale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        from images import ImageUtils
         gray_scaled = ImageUtils.scaleImage(gray, scale)
         result = []
         result_faces = super().classify(gray_scaled)
@@ -163,6 +181,7 @@ class FaceClassifier(CascadeClassifier):
 class ColorGroupClassifier(Classifier):
 
     def __init__(self, count=Constants.KM_GROUP_COUNT, color=Constants.COLOR_TRASH):
+        from images import Colors
         self.lower, self.upper = Colors.get_color_limits(color)
         self.color = color
         self.count = count
@@ -175,6 +194,7 @@ class ColorGroupClassifier(Classifier):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.lower, self.upper)
         denoised = cv2.fastNlMeansDenoising(mask, None, h=40, templateWindowSize=3, searchWindowSize=5)
+        from images import ImageUtils
         scaled_mask = ImageUtils.scaleImage(denoised, scale)
         scaled_key_points = []
         for key_point in self.sift.detect(scaled_mask, None):
@@ -231,3 +251,51 @@ class ColorGroupClassifier(Classifier):
             image_copied = image.copy()
             cv2.drawKeypoints(image_copied, key_points, image_copied)
             # ImageUtils.IO.saveJpg('keypoints', image_copied)
+
+
+class FaceUtils:
+    @staticmethod
+    def analyze_and_save_to_db(face):
+        try:
+            analysis_result = FaceClassifier.analyze(face)
+            gender = str(analysis_result['dominant_gender'])
+            age = str(analysis_result['age'])
+            emotion = str(analysis_result['dominant_emotion'])
+            race = str(analysis_result['dominant_race'])
+            logger.info(f'Person succesfully classified:\n'
+                        f'------------------------------------\n'
+                        f'Gender:  {gender}\n'
+                        f'Age:     ~{age}\n'
+                        f'Emotion: {emotion}\n'
+                        f'Race:    {race}\n'
+                        f'------------------------------------')
+            base64 = ImageUtils.to_base_64(face)
+        except ValueError:
+            age = 'CLASSIFIED'
+            emotion = 'CLASSIFIED'
+            race = 'CLASSIFIED'
+            gender = 'CLASSIFIED'
+        values = (base64, age, race, gender, emotion)
+        SqlUtil.execute('insert into tbl_faces(base, age, race, gender, emotion) values(%s, %s, %s, %s, %s)',
+                        values=values)
+
+    @staticmethod
+    def load_from_db():
+        try:
+            result_set = SqlUtil.execute('select * from tbl_faces', fetch='all')
+        except:
+            result_set = []
+        return result_set
+
+    @staticmethod
+    def to_html_view(result_set):
+        html = ''
+        for _, base64, age, race, gender, emotion in result_set:
+            base_image = base64.tobytes().decode('utf-8')
+            # logger.info(base_image)
+            text = f'{race} {gender}<br>' \
+                   f'Age:       {age}<br>' \
+                   f'Currently: {emotion}<br>'
+            img = f'<img src="data:image/jpeg;base64,{base_image}" alt="{race} {gender}">'
+            html += img + text
+        return html

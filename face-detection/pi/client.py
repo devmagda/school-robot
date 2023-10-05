@@ -15,7 +15,7 @@ class Client:
     @staticmethod
     def add_rotation(z: int, y: int):
         if Client.BLOCK:
-            logger.info(f'Blocked rotation {z}, {y}')
+            # logger.info(f'Blocked rotation {z}, {y}')
             pass
         else:
             Client.get_threaded(f'rotation/add?z={int(z)}&y={int(y)}', blocking=True)
@@ -44,13 +44,14 @@ class Client:
     @staticmethod
     def __get(endpoint, disable_movement):
         path = f'{Client.URL}{endpoint}'
-        logger.info('RUNNING')
+        # logger.info('RUNNING')
         try:
-            logger.info('Do request')
+            # logger.info('Do request')
             requests.get(path)
-            logger.info('Did request')
+            # logger.info('Did request')
         except:
-            logger.info('IO ERROR')
+            pass
+            # logger.info('IO ERROR')
         if disable_movement:
-            logger.info('Got request')
+            # logger.info('Got request')
             Client.BLOCK = False

@@ -5,7 +5,7 @@ import cv2
 
 import Constants
 from Logger import CustomLogger
-from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice, Rectangle
+from detections import FaceClassifier, ColorGroupClassifier, CaptureDevice, Rectangle, FaceUtils
 from images import ImageUtils
 from pi.client import Client
 
@@ -65,6 +65,8 @@ class Model:
                 if self.old_color_groups is not None:
                     for color_group in self.old_color_groups:
                         if not color_group.is_alive():
+                            if self.last_valid_face is not None:
+                                Thread(target=FaceUtils.analyze_and_save_to_db, args=(self.last_valid_face,)).start()
                             self.old_color_groups = None
                             Client.shoot()
                             self.play_sound_threaded()
