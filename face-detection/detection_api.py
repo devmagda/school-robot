@@ -1,8 +1,13 @@
 # main.py# import the necessary packages
+import time
+from threading import Thread
+
 import cv2
+import requests
 from flask import Flask, render_template, Response
 
 import Constants
+from detections import FaceUtils
 from images import ImageUtils
 from mcv import Model
 
@@ -14,24 +19,34 @@ model = Model()
 
 
 @app.route('/')
-def index():
+def index_page():
     # rendering webpage
     return render_template('index.html')
 
+@app.route('/history')
+def history_page():
+    result_set = FaceUtils.load_from_db()
+    html = FaceUtils.to_html_view(result_set)
+    return render_template('history.html', data=f'{html}')
 
-def gen_frames2():
+
+def model_calculation_loop():
     while True:
+        start_time = time.time()
         success, frame = cap.read()
         if not success:
             break
         else:
-            found, _ = model.calculate(frame)
-            frame = model.get_color_key_points_image()
-            faces = model.get_face_images()
-            # frame_mirrored = ImageUtils.mirror(frame, 1)
-            # ret, buffer = cv2.imencode('.jpg', frame_mirrored)
-            # frame = buffer.tobytes()
-            yield {'faces': faces, 'frame': frame}
+            frame_mirrored = ImageUtils.mirror(frame, 1)
+            face = model.last_valid_face
+            found, _ = model.calculate(frame_mirrored)
+            frame = model.draw_current_view()
+
+            end_time = time.time()
+
+            delta = end_time - start_time
+
+            yield {'face': face, 'frame': frame, 'run_time': delta}
 
 
 def gen_frames():
@@ -46,20 +61,34 @@ def gen_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
-def get_key_points_image():
-    gen = gen_frames2()
+def get_global_image():
+    gen = model_calculation_loop()
     while True:
         result = next(gen)
         frame = result['frame']
-        frame_mirrored = ImageUtils.mirror(frame, 1)
-        ret, buffer = cv2.imencode('.jpg', frame_mirrored)
+        ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+def get_face_image():
+    gen = model_calculation_loop()
+    while True:
+        result = next(gen)
+        frame = result['face']
+        if frame is None:
+            continue
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/play_sound')
 def play_sound():
+    Thread(target=_play_sound).start()
+    return Response(status=200)
+
+def _play_sound():
     from playsound import playsound
     from playsound import PlaysoundException
     try_harder = True
@@ -69,16 +98,20 @@ def play_sound():
             try_harder = False
         except PlaysoundException:
             pass
-    return Response(status=200)
 
 
 def get_response(function):
     return Response(function, mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(get_key_points_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/face_feed')
+def face_feed():
+    return Response(get_face_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/global_feed')
+def global_feed():
+    return Response(get_global_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 
 if __name__ == '__main__':

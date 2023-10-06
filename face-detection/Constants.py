@@ -9,8 +9,8 @@ import cv2
 # import ImageUtils
 
 # Screen Settings
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
 # K Means variables
 KM_GROUP_COUNT = 2
@@ -28,8 +28,8 @@ COLOR_RED = (20, [0, 0, 255], [255, 0, 0])  # Somehow doesn't work so good
 COLOR_YELLOW = (10, [0, 255, 255], [255, 255, 0])
 COLOR_GREEN = (20, [0, 255, 0], [0, 255, 0])
 COLOR_TURQUOISE = (10, [255, 255, 0], [0, 255, 255])
-COLOR_WHITE = (360, [0, 0, 0], [0, 0, 0])
-COLOR_BLACK = (360, [255, 255, 255], [255, 255, 255])
+COLOR_BLACK = (360, [0, 0, 0], [0, 0, 0])
+COLOR_WHITE = (360, [255, 255, 255], [255, 255, 255])
 
 COLOR_TRASH = COLOR_GREEN
 
@@ -75,3 +75,6 @@ MIRROR_VIEW = False
 
 CLASSIFIER_FACE = 'haarcascade_frontalface_default.xml'
 CLASSIFIER_EYE = 'haarcascade_eye.xml'
+
+
+RECTANGLE_MAX_AGE = 3

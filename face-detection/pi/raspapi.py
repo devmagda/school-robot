@@ -27,46 +27,28 @@ GPIO.output( in8, GPIO.LOW )
 motor_pins = [in5,in6,in7,in8]
 motor_step_counter = 0 ;
 """
+
+
 @app.route('/rotation/add', methods=['GET'])
 def add_rotation():
-    # Get the two parameters from the URL query string
     y = int(request.args.get('y'))
     z = int(request.args.get('z'))
-    exit_code = 0
-    try:
-        conn.up(y)
-    except ValueError:
-        exit_code = 1
-        print('Y Rotation invalid')
-    try:
-        conn.right(z)
-    except ValueError:
-        exit_code = 1
-        print('Z Rotation invalid')
-    if exit_code == 0:
-        return Response(status=200)
-    return Response(status=400)
+    conn.move(z, y)
+    return Response(status=200)
+
 
 @app.route('/rotation/set', methods=['GET'])
 def set_rotation():
-    # Get the two parameters from the URL query string
     y = int(request.args.get('y'))
     z = int(request.args.get('z'))
-    exit_code = 0
-    try:
-        conn.y_rotator.set_rotation(y)
-    except ValueError:
-        exit_code = 1
-        print('Y Rotation invalid')
-    try:
-        conn.z_rotator.set_rotation(z)
-    except ValueError:
-        exit_code = 1
-        print('Z Rotation invalid')
-    if exit_code == 0:
-        return Response(status=200)
-    return Response(status=400)
+    conn.set(z, y)
+    return Response(status=200)
 
+
+@app.route('/shoot')
+def shoot():
+    conn.shoot()
+    return Response(status=200)
 
 
 # home route that returns below text
@@ -74,25 +56,6 @@ def set_rotation():
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
-
-
-class Client:
-    URL = "http://pi.local:8080"
-
-    @staticmethod
-    def add_rotation(z: int, y: int):
-        Client.get(f'rotation/add/?z={z}&y={y}')
-
-    @staticmethod
-    def set_rotation(z: int, y: int):
-        Client.get(f'rotation/set/?z={z}&y={y}')
-
-    @staticmethod
-    def get(endpoint):
-        import requests
-        response = requests.get(f'{Client.URL}/{endpoint}')
-        if response.status_code != 200:
-            raise ValueError('An Error occurred')
 
 
 # Run the Flask application if this script is executed

@@ -1,8 +1,13 @@
+import base64
+
 import cv2
 import numpy as np
 
 import Constants
+from Logger import CustomLogger
+from db.sql import Connection, SqlUtil
 
+logger = CustomLogger(__name__).get_logger()
 
 class Colors:
 
@@ -21,6 +26,15 @@ class Colors:
 
 
 class ImageUtils:
+    conn = Connection()
+
+    @staticmethod
+    def to_base_64(image):
+        # Encode the image as a JPG in memory
+        _, image_data = cv2.imencode('.jpg', image)
+        # Convert the binary image data to a base64 string
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+        return image_base64
 
     @staticmethod
     def mirror(img, mode):
@@ -29,7 +43,17 @@ class ImageUtils:
     @staticmethod
     def draw_key_points(image, key_points):
         image_copy = image.copy()
-        cv2.drawKeypoints(image_copy, key_points, image_copy)
+        cv2.drawKeypoints(image_copy, key_points, image_copy, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        return image_copy
+
+    @staticmethod
+    def draw_key_points_custom(image, key_points, bgr=Constants.COLOR_RED[1]):
+        image_copy = image.copy()
+
+        # Draw keypoints on the image with the specified color
+        for kp in key_points:
+            x, y = map(int, kp.pt)
+            cv2.circle(image_copy, (x, y), 2, bgr, -1)
         return image_copy
 
     @staticmethod
@@ -59,6 +83,15 @@ class ImageUtils:
     def apply_mask(image, mask):
         image_copy = image.copy()
         cv2.bitwise_and(image_copy, image_copy, mask=mask)
+
+    @staticmethod
+    def draw_mask_outline(image, mask):
+        image_copy = image.copy()
+        cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+        for c in cnts:
+            cv2.drawContours(image_copy, [c], -1, Constants.COLOR_BLACK[1], thickness=2)
+        return image_copy
 
     class IO:
         FILE_INDEX = 0
