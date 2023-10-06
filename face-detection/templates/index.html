@@ -1,10 +1,105 @@
+<style>
+    body {
+        margin: 0;
+        font-family: Arial;
+    }
+
+    .navbar {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        background-color: rgb(119, 160, 220);
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .logo-container {
+        padding-left: 2rem;
+        flex-grow: 2;
+    }
+
+    .logo {
+        display: inline-block;
+        width: 10%;
+        height: auto;
+    }
+
+    .navbar-ul {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        flex-grow: 1;
+    }
+
+    .navbar-li {
+        display: inline-block;
+        list-style-type: none;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .navbar-li:hover {
+        transform: scale(1.05);
+        text-shadow: 0 0 1rem rgba(255, 255, 255, 0.9);
+    }
+
+    .navbar-link {
+        font-weight: bold;
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 1rem 1rem;
+        text-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+    }
+
+    .button {
+        display: inline-block;
+        color: white;
+        padding: 0.75rem 2rem;
+        background-color: transparent;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .button:hover {
+        background-color: rgb(125, 180, 250, 0.35)
+    }
+
+    .video-container {
+        max-width: 75rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+</style>
+
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8  offset-lg-2">
-            <h3 class="mt-5">Live Streaming</h3>
-            <img src="{{ url_for('video_feed') }}" width="50%">
+    <div>
+        <nav class="navbar">
+            <a class="logo-container">
+                <img class="logo" src="jpg/company.jpg">
+            </a>
+            <ul class="navbar-ul">
+                <li class="navbar-li">
+                    <a href="#" class="navbar-link button">Live Feed</a>
+                </li>
+                <!-- ggf. einsetzen, wenn es noch eine zweite seite geben soll, wo alle detected faces gezeigt werden-->
+                <!--<li>
+                    <a href="#" class="headline">Image Collection</a>
+                </li> -->
+                <li class="navbar-li">
+                    <a href="https://mahara.itech-bs14.de/view/view.php?id=22984" class="navbar-link button">About Us</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container video-container">
+        <div class="row">
+            <div class="col-lg-8  offset-lg-2">
+                <img src="{{ url_for('video_feed') }}" width="100%" height="95%">
+            </div>
         </div>
     </div>
-</div>
 </body>
