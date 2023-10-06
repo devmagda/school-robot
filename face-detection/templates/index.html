@@ -75,31 +75,40 @@
 </style>
 
 <body>
-    <div>
-        <nav class="navbar">
-            <a class="logo-container">
-                <img class="logo" src="jpg/company.jpg">
-            </a>
-            <ul class="navbar-ul">
-                <li class="navbar-li">
-                    <a href="#" class="navbar-link button">Live Feed</a>
-                </li>
-                <!-- ggf. einsetzen, wenn es noch eine zweite seite geben soll, wo alle detected faces gezeigt werden-->
-                <!--<li>
-                    <a href="#" class="headline">Image Collection</a>
-                </li> -->
-                <li class="navbar-li">
-                    <a href="https://mahara.itech-bs14.de/view/view.php?id=22984" class="navbar-link button">About Us</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+<<<<<<< HEAD
+<div>
+    <nav class="navbar">
+        <a class="logo-container">
+            <img class="logo" src="jpg/company.jpg">
+        </a>
+        <ul class="navbar-ul">
+            <li class="navbar-li">
+                <a href="#" class="navbar-link button">Live Feed</a>
+            </li>
+            <!-- ggf. einsetzen, wenn es noch eine zweite seite geben soll, wo alle detected faces gezeigt werden-->
+            <!--<li>
+                <a href="#" class="headline">Image Collection</a>
+            </li> -->
+            <li class="navbar-li">
+                <a href="https://mahara.itech-bs14.de/view/view.php?id=22984" class="navbar-link button">About Us</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
-    <div class="container video-container">
-        <div class="row">
-            <div class="col-lg-8  offset-lg-2">
-                <img src="{{ url_for('video_feed') }}" width="100%" height="95%">
-            </div>
+<div class="container video-container">
+    <div class="row">
+        <div class="col-lg-8  offset-lg-2">
+            <img src="{{ url_for('video_feed') }}" width="100%" height="95%">
         </div>
-    </div>
+        =======
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8  offset-lg-2">
+                    <h3 class="mt-5">{{ fps }}</h3>
+                    <img src="{{ url_for('face_feed') }}" width="200px" height="200px" >
+                    <img src="{{ url_for('global_feed') }}" width="800px" height="600px" >
+                    >>>>>>> e77ae1b310cee5ff169e182c8c4c446b8fc44b00
+                </div>
+            </div>
 </body>
