@@ -1,82 +1,8 @@
-<style>
-    body {
-        margin: 0;
-        font-family: Arial;
-        background-color: black;
-    }
-
-    .navbar {
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        background-color: rgb(226,29,60);
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        height: 3rem;
-    }
-
-    .logo-container {
-        padding-left: 2rem;
-        flex-grow: 2;
-    }
-
-    .logo {
-        display: inline-block;
-        width: 7rem;
-        height: 3rem;
-    }
-
-    .navbar-ul {
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        margin: 0;
-        text-align: center;
-        flex-grow: 1;
-    }
-
-    .navbar-li {
-        display: inline-block;
-        list-style-type: none;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .navbar-li:hover {
-        transform: scale(1.05);
-        text-shadow: 0 0 1rem rgba(255, 255, 255, 0.9);
-    }
-
-    .navbar-link {
-        font-weight: bold;
-        display: block;
-        color: white;
-        text-decoration: none;
-        padding: 1rem 1rem;
-        text-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
-    }
-
-    .button {
-        display: inline-block;
-        color: darkgray;
-        padding: 0.75rem 2rem;
-        background-color: transparent;
-        font-weight: bold;
-        text-decoration: none;
-        vertical-align: center;
-    }
-
-    .button:hover {
-        background-color: rgb(226,29,60, 0.35)
-    }
-
-    .video-container {
-        max-width: 75rem;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
 
 <body>
     <nav class="navbar">
@@ -106,6 +32,7 @@
         <div class="row">
             <div class="col-lg-8  offset-lg-2">
                 <img src="{{ url_for('global_feed') }}" width="1200px" height="900px" >
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2373.250348393779!2d10.000299712735657!3d53.499723163120436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b18e247b716e69%3A0xa79226ab946c2160!2sBerufliche%20Schule%20ITECH%20Elbinsel%20Wilhelmsburg%20(BS14)!5e0!3m2!1sde!2sde!4v1696788163919!5m2!1sde!2sde" width="620" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </div>

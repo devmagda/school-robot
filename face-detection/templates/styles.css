@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    background-color: black;
+}
+
+.navbar {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    background-color: rgb(226,29,60);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 3rem;
+}
+
+.logo-container {
+    padding-left: 2rem;
+    flex-grow: 2;
+}
+
+.logo {
+    display: inline-block;
+    width: 7rem;
+    height: 3rem;
+}
+
+.navbar-ul {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    margin: 0;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.navbar-li {
+    display: inline-block;
+    list-style-type: none;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.navbar-li:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 1rem rgba(255, 255, 255, 0.9);
+}
+
+.navbar-link {
+    font-weight: bold;
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1rem;
+    text-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+}
+
+.button {
+    display: inline-block;
+    color: darkgray;
+    padding: 0.75rem 2rem;
+    background-color: transparent;
+    font-weight: bold;
+    text-decoration: none;
+    vertical-align: center;
+}
+
+.button:hover {
+    background-color: rgb(226,29,60, 0.35)
+}
+
+.video-container {
+    max-width: 75rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+
+
+.history_nav-margin {
+    margin-bottom: 2rem;
+}
+
+.history_card-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    margin: -1rem;
+}
+
+.history_card {
+    position: relative;
+    padding-left: 2rem;
+    padding-bottom: 2rem;
+    margin: 1rem;
+    text-align: left;
+    background-color: rgb(226,29,60);
+    flex: 0 0 22.3333rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+    will-change: transform;
+    transform: scale(1);
+    transition: transform 0.25s ease-in-out;
+}
+
+.history_card:hover {
+    transform: scale(1.05);
+}
+
+.history_image {
+    display: block;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.history_list {
+    padding-left: 1rem;
+    letter-spacing: 0.1rem;
+    list-style-type: none;
+}
+
+.history_list > li {
+    padding-bottom: 0.5rem;
+}
+
+
+
+
+.image_card {
+    background-color: rgb(226,29,60);
+}
