@@ -24,7 +24,6 @@ body {
 }
 
 .navbar {
-    padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     background-color: rgb(226, 29, 60);
     display: flex;
@@ -45,7 +44,6 @@ body {
 }
 
 .navbar-ul {
-    padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     margin: 0;
     text-align: center;
@@ -75,24 +73,33 @@ body {
 
 .button {
     display: inline-block;
-    color: darkgray;
-    padding: 0.75rem 2rem;
-    background-color: transparent;
-    font-weight: bold;
-    text-decoration: none;
-    vertical-align: center;
+    position: relative;
+    color: white;
 }
 
-.button:hover {
-    background-color: rgb(226, 29, 60, 0.35)
+.button:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: white;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+
+.button:hover:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
 }
 
 .video-container {
-    max-width: 75rem;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
+    display: flex;
     padding-right: 1rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 
