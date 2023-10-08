@@ -15,7 +15,7 @@ class Client:
     @staticmethod
     def add_rotation(z: int, y: int):
         if Client.BLOCK:
-            # logger.info(f'Blocked rotation {z}, {y}')
+            logger.info(f'Blocked rotation {z}, {y}')
             pass
         else:
             Client.get_threaded(f'rotation/add?z={int(z)}&y={int(y)}', blocking=True)
@@ -47,7 +47,7 @@ class Client:
         # logger.info('RUNNING')
         try:
             # logger.info('Do request')
-            requests.get(path)
+            requests.get(path, timeout=1)
             # logger.info('Did request')
         except:
             pass

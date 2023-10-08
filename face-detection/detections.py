@@ -256,6 +256,7 @@ class ColorGroupClassifier(Classifier):
 class FaceUtils:
     @staticmethod
     def analyze_and_save_to_db(face):
+        base64 = ImageUtils.to_base_64(face)
         try:
             analysis_result = FaceClassifier.analyze(face)
             gender = str(analysis_result['dominant_gender'])
@@ -269,7 +270,6 @@ class FaceUtils:
                         f'Emotion: {emotion}\n'
                         f'Race:    {race}\n'
                         f'------------------------------------')
-            base64 = ImageUtils.to_base_64(face)
         except ValueError:
             age = 'CLASSIFIED'
             emotion = 'CLASSIFIED'
