@@ -1,14 +1,150 @@
 <style>
+    body {
+        font-family: Arial;
+        margin: 0;
+    }
 
+    .navbar {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        background-color: rgb(119, 160, 220);
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .logo-container {
+        padding-left: 2rem;
+        flex-grow: 2;
+    }
+
+    .logo {
+        display: inline-block;
+        width: 7rem;
+        height: 3rem;
+    }
+
+    .navbar-ul {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        margin: 0;
+        text-align: center;
+        flex-grow: 1;
+    }
+
+    .navbar-li {
+        display: inline-block;
+        list-style-type: none;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .navbar-li:hover {
+        transform: scale(1.05);
+        text-shadow: 0 0 1rem rgba(255, 255, 255, 0.9);
+    }
+
+    .navbar-link {
+        font-weight: bold;
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 1rem 1rem;
+        text-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+    }
+
+    .button {
+        display: inline-block;
+        color: white;
+        padding: 0.75rem 2rem;
+        background-color: transparent;
+        font-weight: bold;
+        text-decoration: none;
+        vertical-align: center;
+        margin-top: 1px;
+    }
+
+    .history_card-container {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+        margin: -1rem;
+    }
+
+    .history_card {
+        position: relative;
+        padding-left: 2rem;
+        padding-bottom: 2rem;
+        margin: 1rem;
+        text-align: left;
+        background-color: rgb(119, 160, 220);
+        flex: 0 0 22.3333rem;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+        will-change: transform;
+        transform: scale(1);
+        transition: transform 0.25s ease-in-out;
+    }
+
+    .history_card:hover {
+        transform: scale(1.05);
+    }
+
+    .history_image {
+        display: block;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .history_list {
+        padding-left: 1rem;
+        letter-spacing: 0.1rem;
+        list-style-type: none;
+    }
+
+    .history_list > li {
+        padding-bottom: 0.5rem;
+    }
 </style>
 
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8  offset-lg-2">
-            <h3 class="mt-5">History</h3>
-            {{data | safe}}
+    <nav class="navbar">
+        <a class="logo-container">
+            <svg fill="#ffff" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="logo">
+                <defs>
+                    <clipPath id="dddivided-clip1"><rect width="50%" height="100%" x="0" y="0"></rect></clipPath>
+                    <clipPath id="dddivided-clip2"><rect width="50%" height="100%" x="50%" y="0"></rect></clipPath>
+                </defs>
+                <path fill="#5AC4F6" clip-path="url(#dddivided-clip1)" transform="translate(-10,-10)" d="m73.8 139.715-15.349-47.24c6.102 2.549 11.426 4.246 16.06 4.881 5.42.743 10.025.05 13.818-2.552 3.764-2.583 6.5-6.891 8.534-12.896 1.339-3.95 2.396-8.7 3.235-14.304 1.256 5.623 2.654 10.38 4.255 14.327 2.42 5.965 5.357 10.215 9.1 12.765 3.786 2.579 8.201 3.287 13.277 2.553 4.218-.61 8.949-2.222 14.269-4.63l-15.302 47.096H73.8Z"/><path clip-path="url(#dddivided-clip2)" d="m73.8 139.715-15.349-47.24c6.102 2.549 11.426 4.246 16.06 4.881 5.42.743 10.025.05 13.818-2.552 3.764-2.583 6.5-6.891 8.534-12.896 1.339-3.95 2.396-8.7 3.235-14.304 1.256 5.623 2.654 10.38 4.255 14.327 2.42 5.965 5.357 10.215 9.1 12.765 3.786 2.579 8.201 3.287 13.277 2.553 4.218-.61 8.949-2.222 14.269-4.63l-15.302 47.096H73.8Z"/>
+            </svg>
+        </a>
+        <ul class="navbar-ul">
+            <li class="navbar-li">
+                <a href="#" class="navbar-link button">Live Feed</a>
+            </li>
+            <li class="navbar-li">
+                <a href="./history.html" class="navbar-link button">Image History</a>
+            </li>
+            <li class="navbar-li">
+                <a href="https://mahara.itech-bs14.de/view/view.php?id=22984" class="navbar-link button">About Us</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container history_card-container">
+        <div class="row history_card">
+            <div class="col-lg-8  offset-lg-2">
+                <h3 class="mt-5"></h3>
+                <img src="{{data | safe}}" class="history_image" width="50%">
+                <ul class="history_list">
+                    <li>abc</li>
+                    <li>def</li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 </body>
