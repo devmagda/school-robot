@@ -85,12 +85,12 @@ class ImageUtils:
         cv2.bitwise_and(image_copy, image_copy, mask=mask)
 
     @staticmethod
-    def draw_mask_outline(image, mask):
+    def draw_mask_outline(image, mask, bgr=Constants.COLOR_BLACK[1]):
         image_copy = image.copy()
         cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if len(cnts) == 2 else cnts[1]
         for c in cnts:
-            cv2.drawContours(image_copy, [c], -1, Constants.COLOR_BLACK[1], thickness=2)
+            cv2.drawContours(image_copy, [c], -1, bgr, thickness=2)
         return image_copy
 
     class IO:

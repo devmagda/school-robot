@@ -168,7 +168,7 @@ class FaceClassifier(CascadeClassifier):
             # ImageUtils.IO.saveJpg('face', cut_face)
             result_eyes = self.eye_classifier.classify(cut_face)
             if Constants.FILTER_FACES and len(result_eyes) >= Constants.EYES_MINIMUM:
-                result.append(Rectangle(x, y, w, h, bgr=[255, 0, 0]).scale(inverted_scale))
+                result.append(Rectangle(x, y, w, h, bgr=[0, 0, 0]).scale(inverted_scale))
         return result
 
     def calculate(self, gray):
@@ -217,7 +217,7 @@ class ColorGroupClassifier(Classifier):
         for center in centers:
             if len(center) == 2:
                 x, y = center
-                result.append(Rectangle(x - 10, y - 10, 20, 20, bgr=self.color[2]))
+                result.append(Rectangle(x - 10, y - 10, 20, 20, bgr=Constants.COLOR_BLACK[1]))
         if len(result) == 0:
             return None
         self.old_mask = denoised

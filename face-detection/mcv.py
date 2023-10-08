@@ -86,19 +86,26 @@ class Model:
 
     def draw_current_view(self):
         image_copy = self.current_image.copy()
-        colored = image_copy
+        gray_image = cv2.cvtColor(image_copy, cv2.COLOR_BGR2GRAY)
+
+        # Convert the grayscale image back to color
+        colorized_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+
+        colored = colorized_image
 
         if self.old_face is not None:
             self.old_face.draw(colored)
         if self.old_color_groups is not None:
+            self.old_color_groups
             colored = ImageUtils.draw_mask_outline(colored, self.color_groups_detector.old_mask)
             for rectangle in self.old_color_groups:
                 rectangle.draw(colored, only_center=True)
         # with_key_points = ImageUtils.draw_key_points_custom(colored, self.color_groups_detector.key_points)
 
         h, w, _ = image_copy.shape
-        image_center = Rectangle(0, 0, w, h)
+        image_center = Rectangle(0, 0, w, h, bgr=[0, 0, 0])
         image_center.draw(colored, only_center=True, radius=5, thickness=1)
+
 
         return colored
 

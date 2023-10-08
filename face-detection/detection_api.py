@@ -11,8 +11,8 @@ from detections import FaceUtils
 from images import ImageUtils
 from mcv import Model
 
-app = Flask(__name__)
-cap = cv2.VideoCapture(1)
+app = Flask(__name__, static_url_path='/static')
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.SCREEN_HEIGHT)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.SCREEN_WIDTH)
 model = Model()
@@ -22,6 +22,7 @@ model = Model()
 def index_page():
     # rendering webpage
     return render_template('index.html')
+
 
 @app.route('/history')
 def history_page():
@@ -64,12 +65,16 @@ def gen_frames():
 def get_global_image():
     gen = model_calculation_loop()
     while True:
-        result = next(gen)
-        frame = result['frame']
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        try:
+            result = next(gen)
+            frame = result['frame']
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        except RuntimeError:
+            pass
+
 
 def get_face_image():
     gen = model_calculation_loop()
@@ -83,10 +88,12 @@ def get_face_image():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+
 @app.route('/play_sound')
 def play_sound():
     Thread(target=_play_sound).start()
     return Response(status=200)
+
 
 def _play_sound():
     from playsound import playsound
@@ -108,10 +115,10 @@ def get_response(function):
 def face_feed():
     return Response(get_face_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route('/global_feed')
 def global_feed():
     return Response(get_global_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 
 if __name__ == '__main__':
