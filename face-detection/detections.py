@@ -289,13 +289,24 @@ class FaceUtils:
 
     @staticmethod
     def to_html_view(result_set):
-        html = ''
+        result = ''
         for _, base64, age, race, gender, emotion in result_set:
+
             base_image = base64.tobytes().decode('utf-8')
+            src = f'data:image/jpeg;base64,{base_image}'
+            alt = f'{race} {gender}'
+
             # logger.info(base_image)
             text = f'{race} {gender}<br>' \
                    f'Age:       {age}<br>' \
                    f'Currently: {emotion}<br>'
-            img = f'<img src="data:image/jpeg;base64,{base_image}" alt="{race} {gender}">'
-            html += img + text
-        return html
+
+            html = f'<li class="list-item">' \
+                   f'    <div>' \
+                   f'        <img src="{src}" alt="{alt}"/>' \
+                   f'        <p>{text}</p>' \
+                   f'    </div>' \
+                   f'</li>'
+
+            result += html
+        return result
